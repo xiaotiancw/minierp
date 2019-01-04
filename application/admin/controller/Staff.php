@@ -33,17 +33,17 @@ class Staff extends \app\common\controller\BaseController
     public function create() {
         if ($this->request->isPost()) {
             $data = input('post.');
-            if (!$data['dimission_date']) {
-                $data['dimission_date'] = null;
-            }
+//            if (!$data['dimission_date']) {
+//                $data['dimission_date'] = null;
+//            }
             $data['create_time'] = get_time();
             $result = 0;
             //启动事务
             Db::startTrans();
             try {
                 //$userId = Db::name('user')->strict(false)->insertGetId($data);
-                $data['staff_id'] = db('staff')->strict(false)->insertGetId($data);
-                $result = db('staff_extend')->strict(false)->insert($data);
+                $data['staff_id'] = Db::name('staff')->strict(false)->insertGetId($data);
+                $result = Db::name('staff_extend')->strict(false)->insert($data);
                 // 提交事务
                 Db::commit();
             } catch (\Exception $e) {

@@ -40,6 +40,7 @@ return [
         '__CSS__' => '/minierp/public/static/css',
         '__IMG__' => '/minierp/public/static/img',
         '__JS__' => '/minierp/public/static/js',
+        '__EDITOR__' => '/minierp/public/static/kindeditor',
     ]
     
     //域名模式
