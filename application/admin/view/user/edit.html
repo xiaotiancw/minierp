@@ -1,0 +1,131 @@
+{extend name="template/base" /}
+
+{block name="main"}
+<!-- 编辑数据 -->
+    <div class="form1-column">
+        <form id="formEdit" class="easyui-form" method="post" data-options="">
+            <div class="form-column1">
+                <div class="form-column-left">
+                    <input name="accounts" class="easyui-textbox" data-options="label:'账号名称：',required:true,validType:['NotEmpty','minLength[2]']">
+                </div>
+            </div>
+            <div class="form-column1">
+                <div class="form-column-left">
+                    <input id="edit_staff_id" name="staff_id" class="easyui-textbox" data-options="label:'关联员工：',required:true">
+                </div>
+            </div>
+            
+            <div class="form-column1">
+                <div class="form-column-left">
+                    <input id="edit_state" name="state" class="easyui-textbox" data-options="label:'启用：',required:true">
+                </div>
+            </div>
+            <div class="form-btnBar pl75">
+                <input type="hidden" name="id"/>
+                <a id='editFormSubmit' href="javascript:void(0)" class="easyui-linkbutton btnPrimary" style="width:80px">保存</a>
+                <a id="editFormClear" href="javascript:void(0)" class="easyui-linkbutton btnDefault" style="width:80px">重置</a>
+            </div>
+        </form>
+    </div>
+
+
+<script>       
+    var edit_staff_combogrid = $('#edit_staff_id');
+    var editForm = $('#formEdit');
+    var staff_combogrid_url = '{:url("/admin/staff/combo_grid")}';
+    var edit_url =  '{:url("/admin/user/edit")}',
+        detail_url =  '{:url("/admin/user/detail")}';
+    var StateData = [
+        { "value": "正常", "text": "正常" },
+        { "value": "冻结", "text": "冻结" }
+    ];
+    
+
+$(function () {
+    editForm.form('load', detail_url + "?id=" + {:$id});
+    
+    $('#edit_state').combobox({
+            data:StateData,
+            valueField:'value',
+            textField:'text',
+            editable : false,
+            //panelWidth:100,
+            panelHeight:70
+        });
+       
+        
+        //新增关联档案
+        edit_staff_combogrid.combogrid({
+            width : 120,
+            height : 32,
+            url : staff_combogrid_url,
+            panelWidth : 450,
+            panelHeight : 'auto',
+            panelMaxHeight : 227,
+            fitColumns : true,
+            rownumbers : true,
+            border : false,
+            idField:'id',
+            textField:'name',
+            editable : false,
+            sortName : 'create_time',
+            sortOrder : 'DESC',
+            pagination : true,
+            pageSize : 5,
+            pageList : [5, 10, 30, 40, 50],
+            pageNumber : 1,
+            columns : [[
+                {field : 'id',title : '自动编号',width : 50,hidden : true},
+                {field : 'name',title : '姓名',width : 80},
+                {field : 'number',title : '工号',width : 50,sortable : true},
+                {field : 'gender',title : '性别',width : 50,sortable : true},
+                {field : 'id_card',title : '身份证',width : 150},
+                {field : 'post',title : '职位',width: 50},
+                {field: 'create_time',title: '创建时间',width: 100,hidden: true}
+                ]],
+            onOpen: function ()
+            {
+                edit_staff_combogrid.combogrid('grid').datagrid('reload');
+            },
+            onShowPanel: function ()
+            {
+                edit_staff_combogrid.combogrid('panel').panel('resize', {
+                    width: '500px'
+                })
+            }
+        });
+        
+        //editForm.form('load', detail_url + "?id=" + {:$id});
+
+        $("#editFormClear").click(function () {
+            editForm.form('clear');
+        });
+
+        /**
+         * 提交表单
+         * return
+         */
+        $('#editFormSubmit').click(function () {
+            var isValid = editForm.form('validate');
+            if (isValid) {
+                $.messager.progress();
+                $.ajax({
+                    type: 'POST',
+                    url: edit_url,
+                    data: editForm.serialize(),
+                    success: function (result) {
+                        $.messager.progress('close');
+                        layer.msg(result.Message);
+                        if (result.Success) {
+                            parent.dataGrid.datagrid('reload');//刷新主表
+                            //layer.close(parent.dlg);//关闭窗口
+                            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                            parent.layer.close(index); //再执行关闭   
+                        }
+                    }
+                });
+            }
+        });
+});
+</script>
+{/block}

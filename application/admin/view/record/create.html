@@ -1,0 +1,50 @@
+<!-- 新增数据 -->
+<div class="dig-wrapper" id="newData-wrapper">
+    <div class="form1-column">
+        <form id="formAdd" class="easyui-form" method="post" data-options="">
+            <div class="form-column1">
+                <div class="form-column-left">
+                    <input class="easyui-textbox" id="recordid" name="recordid"  style="width:100%" data-options="label:'记录号:',required:true">
+                </div>
+            </div>
+            <div class="form-column1">
+                <div class="form-column-left">
+                    <input class="easyui-textbox" name="productid" style="width:100%" data-options="label:'产品型号',required:true">
+                </div>
+            </div>
+            <div class="form-column1">
+                <div class="form-column-left">
+                    <input class="easyui-combobox" name="sale_type" style="width:100%" data-options="label:'销售性质',required:true,
+                           data:erp.SaleType,
+                           valueField:'value',
+                           textField:'text',
+                           panelHeight:120">
+                </div>
+            </div>
+            <div class="form-column1">
+                <div class="form-column-left">
+                    <input class="easyui-numberbox" name="num" style="width:100%" data-options="label:'数量',required:true,min:0,precision:2">
+                </div>
+            </div>
+            <div class="form-column1">
+                <div class="form-column-left">
+                    <input class="easyui-datebox" name="deadline" style="width:100%" data-options="label:'交期',required:true">
+                </div>
+            </div>
+            <div class="form-column1">
+                <div class="form-column-left">
+                    <input class="easyui-textbox" name="deviceid" style="width:100%" data-options="label:'机台号',required:true">
+                </div>
+            </div>
+            <div class="form-column1">
+                <div class="form-column-left">
+                    <input class="easyui-textbox" name="message" style="width:100%;height:60px" data-options="label:'备注:',multiline:true">
+                </div>
+            </div>
+            <div class="form-btnBar pl75">
+                <a id="addFormSubmit" href="javascript:void(0)" class="easyui-linkbutton btnPrimary" style="width:80px">保存</a>
+                <a id="addFormClear" href="javascript:void(0)" class="easyui-linkbutton btnDefault" style="width:80px">重置</a>
+            </div>
+        </form>
+    </div>
+</div>

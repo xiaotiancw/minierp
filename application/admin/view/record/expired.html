@@ -1,0 +1,348 @@
+{extend name="template/base" /}
+
+{block name="main"}
+
+<div id='toolbar' style="padding: 5px;">
+    <div class="btnbar-tools">
+        <!--<a href="javascript:;" class="add" id="newData"><i class="fa fa-plus-square success"></i>添加</a>
+        <a href="javascript:;" class="edit"><i class="fa fa-pencil-square info"></i>编辑</a>
+        <a href="javascript:;" class="del"><i class="fa fa-times-rectangle danger"></i>删除</a>
+                        <a href="javascript:;" class="count"><i class="fa fa-pie-chart purple"></i>统计</a>
+        <a href="javascript:;" class="sha_check"><i class="fa fa-check-circle yellow"></i>1纱线处理</a>
+        <a href="javascript:;" class="mtr_check"><i class="fa fa-check-circle yellow"></i>2备料处理</a>
+        <a href="javascript:;" class="assign_check"><i class="fa fa-check-circle yellow"></i>3生产排单</a>
+        <a href="javascript:;" class="lean_check"><i class="fa fa-check-circle yellow"></i>4领料处理</a>
+        <a href="javascript:;" class="end_check"><i class="fa fa-check-circle yellow"></i>5结束</a>-->
+        <a href="javascript:;" class="export"><i class="fa fa-file-excel-o yellow"></i>导出Excel</a>
+
+    </div>
+    <div class="tool-search" style="padding:5px 0 0 0;">
+        <label for="order-search-keywords" style="margin-left: 10px;">用户名：</label>
+        <input type="text" id="order-search-keywords" class="easyui-textbox">
+        <label for="order-search-keywords">姓名：</label>
+        <input type="text" id="order-search-date-type" class="easyui-textbox">
+        <label for="order-search-keywords">时间区间：</label>
+        <input type="text" id="order-search-date-from" class="easyui-datebox">
+        <label for="order-search-date-to">-</label>
+        <input type="text" id="order-search-date-to" class="easyui-datebox">
+        <a href="javascript:void(0)" class="easyui-linkbutton" data-options='iconCls:"fa fa-search"' onclick="orderOpt.search()">查询</a>
+    </div>
+</div>
+<table id="dataGrid" data-options="border:false"></table>
+
+
+<script type="text/javascript">
+            $(function(){
+                $('#click_event').click(function(){
+                    if($('#hidden_enent').is(':hidden')){
+                        $(this).addClass("more_bg"); 
+                        $('#hidden_enent').show(); 
+                        $('#click_event').val('点击隐藏'); 
+                    }else{
+                        $(this).removeClass("more_bg"); 
+                        $('#hidden_enent').hide(); 
+                        $('#click_event').val('点击显示'); 
+                    } 
+                }); 
+                
+            }); 
+        
+    var dataGrid;
+    var dlg = '';
+    var erp = erp || {};
+    erp.PersonData = [
+        { "value": "黄桂琴", "text": "黄桂琴" },
+        { "value": "黄强", "text": "黄强" },
+        { "value": "郭红娣", "text": "郭红娣" },
+        { "value": "于大寿", "text": "于大寿" },
+        { "value": "苟晓东", "text": "苟晓东" },
+    ];
+    erp.SaleType = [
+        { "value": "内销", "text": "内销" },
+        { "value": "备库", "text": "备库" },
+        { "value": "新样", "text": "新样" },
+    ];
+    
+    //var now = new Date();
+    //now.setDate(now.getDate()-1);  
+    //alert($(document).height() - 35);//style="width:100%;height:550px;"
+
+    $(function () {
+        //dataGrid = $('#dataGrid').css('height',$(document).height() - 100);
+        dataGrid = $('#dataGrid').datagrid({
+            url: "{:url('/admin/record/datagrid_expired')}",
+            //toolbar: '#toolbar',
+            //fitColumns: true,
+            //fit: true,
+            width: $(window).width() - 10,
+            height: $(window).height() - 85,
+            nowrap: false,
+            sortName: 'id',
+            sortOrder: 'desc',
+            idField: 'id',
+            pageSize: 20,
+            pageList: [10, 20, 30, 40, 50],
+            pagination: true,
+            striped: true, //奇偶行是否区分
+            //singleSelect: true,//单选模式
+            rownumbers: true, //行号
+            frozenColumns:[[
+                {field: 'id', title: '编号', checkbox: true },
+                {field: 'recordid', title: '记录号', width: 100, sortable: true},
+                {field: 'sale_type', title: '销售性质', width: 100},
+                {field: 'productid', title: '产品型号', width: 100},
+                {field: 'num', title: '数量', width: 80},
+                {field: 'deviceid', title: '机台号', width: 80},
+                {field: 'deadline', title: '交期', width: 100,sortable: true,
+                    formatter: function (value, row,index){
+                        var oDate1 = new Date();
+                        var oDate2 = new Date(row.deadline);
+                        if(oDate1.getTime() >= oDate2.getTime()){
+                            return '<span style="color:red;">('+value+')</span>';
+                        }else{
+                            return value;
+                        }
+                    }
+                },
+                //{field: 'create_time', title: '创建时间', width: 120},
+                {field: 'message', title: '备注', width: 100},       
+            ]],
+            columns: [[
+                    //{field: 'id', title: '编号', hidden: true },
+                    {field: 'sha_treatstate', title: '纱线处理', width: 100},
+                    {field: 'sha_treatperson', title: '纱线处理人', width: 100},
+                    {field: 'sha_treattime', title: '纱线处理时间', width: 100},
+                    {field: 'mtr_treatstate', title: '备料处理', width: 100},
+                    {field: 'mtr_treatperson', title: '备料处理人', width: 100},
+                    {field: 'mtr_treattime', title: '备料处理时间', width: 100},
+                    {field: 'assign_treatstate', title: '生产排单', width: 100},
+                    {field: 'assign_treatperson', title: '生产排单人', width: 100},
+                    {field: 'assign_treattime', title: '生产处理时间', width: 100},
+                    {field: 'lean_treatstate', title: '领料处理', width: 100},
+                    {field: 'lean_treatperson', title: '领料处理人', width: 100},
+                    {field: 'lean_treattime', title: '领料处理时间', width: 100},
+                    {field: 'end_treatstate', title: '结束', width: 100},
+                    {field: 'end_treatperson', title: '结束人', width: 100},
+                    {field: 'end_treattime', title: '结束处理时间', width: 100},
+//                    {field: 'status', title: '详细', width: 100,
+//                        formatter: function (value, row,index){
+//                            //return row.id;
+//                            return '<a href="javascript:void(0)" class="easyui-linkbutton" >详细</a>';
+//                        }
+//                    },
+                ]],
+//            rowStyler: function(index,row){
+//		var oDate1 = new Date();
+//                var oDate2 = new Date(row.deadline);
+//                if(oDate1.getTime() > oDate2.getTime()){
+//			return 'background-color:#6293BB;color:#fff;'; // return inline style
+//			// the function can return predefined css class and inline style
+//			// return {class:'r1', style:{'color:#fff'}};	
+//                        //return 'background-color:red;color:#fff;';
+//		}
+//            },
+        });
+
+        //刷新dataGrid
+        $('#btnReload').click(function () {
+            dataGrid.datagrid('reload');
+        });
+        
+        $('#search').click(function(){
+            var recordid = $('#search_recordid').textbox('getValue');
+            var deadline = $('#search_deadline').textbox('getValue');
+            var startDate = $('#search_startDate').textbox('getValue');
+            var endDate = $('#search_endDate').textbox('getValue');
+            dataGrid.datagrid({
+                queryParams: {
+                    recordid: recordid,
+                    deadline: deadline,
+                    endDate: endDate,
+                    startDate: startDate
+                }
+            });
+        });
+        
+        
+        //导出
+        $(".export").click(function () {
+            var rows = dataGrid.datagrid('getSelections');
+            if (rows.length >0) {
+                $.messager.confirm('警告', '是否真的导出记录？', function (r) {
+                    if (r) {
+                        var ids = [];
+                        for (var i = 0; i < rows.length; i++) {
+                            ids.push(rows[i].id);
+                            //alert(rows[i]);
+                        }
+                        window.location.href = '../record/export/ids/'+ids.join(',');
+                        //alert(ids);
+//                        $.get('../record/export',{ids:ids.join(',')}, function (result) {
+//                            window.location.href = result.url;
+//                        });
+                    }
+                });
+            } else {
+                layer.msg('请先选择记录后再打开。');
+            }
+        });
+        
+        
+    });
+    
+    //新增提交
+    function submitFormAdd(){
+	var isValid = $("#formAdd").form('validate');
+        if (isValid) {
+                $.messager.progress();
+                $.ajax({
+                    type: 'POST',
+                    url: "{:url('/admin/record/create')}",
+                    data: $("#formAdd").serialize(),
+                    success: function(result){
+                        $.messager.progress('close');
+                        layer.msg(result.Message);
+                        if (result.Success) {
+                            dataGrid.datagrid('reload');//刷新主表
+                            //parent.sy.modalDialog.handler.dialog('close');//关闭窗口
+                            layer.close(dlg);
+                        }
+                    },
+                });
+            }
+    }
+    
+    //编辑提交
+    function submitFormEdit(){
+	var isValid = $("#formEdit").form('validate');
+        if (isValid) {
+                $.messager.progress();
+                $.ajax({
+                    type: 'POST',
+                    url: "{:url('/admin/record/edit')}",
+                    data: $("#formEdit").serialize(),
+                    success: function(result){
+                        $.messager.progress('close');
+                        layer.msg(result.Message);
+                        if (result.Success) {
+                            dataGrid.datagrid('reload');//刷新主表
+                            //parent.sy.modalDialog.handler.dialog('close');//关闭窗口
+                            layer.close(dlg);
+                        }
+                    },
+                });
+            }
+    }
+    
+    //纱线处理提交
+    function submitFormSha(){
+	var isValid = $("#formSha").form('validate');
+        if (isValid) {
+                $.messager.progress();
+                $.ajax({
+                    type: 'POST',
+                    url: "{:url('/admin/record/sha')}",
+                    data: $("#formSha").serialize(),
+                    success: function(result){
+                        $.messager.progress('close');
+                        layer.msg(result.Message);
+                        if (result.Success) {
+                            dataGrid.datagrid('reload');//刷新主表
+                            //parent.sy.modalDialog.handler.dialog('close');//关闭窗口
+                            layer.close(dlg);
+                        }
+                    },
+                });
+            }
+    }
+    
+    //备料处理提交
+    function submitFormMtr(){
+	var isValid = $("#formMtr").form('validate');
+        if (isValid) {
+                $.messager.progress();
+                $.ajax({
+                    type: 'POST',
+                    url: "{:url('/admin/record/mtr')}",
+                    data: $("#formMtr").serialize(),
+                    success: function(result){
+                        $.messager.progress('close');
+                        layer.msg(result.Message);
+                        if (result.Success) {
+                            dataGrid.datagrid('reload');//刷新主表
+                            //parent.sy.modalDialog.handler.dialog('close');//关闭窗口
+                            layer.close(dlg);
+                        }
+                    },
+                });
+            }
+    }
+    
+    //生产排单处理提交
+    function submitFormAssign(){
+	var isValid = $("#formAssign").form('validate');
+        if (isValid) {
+                $.messager.progress();
+                $.ajax({
+                    type: 'POST',
+                    url: "{:url('/admin/record/sc')}",
+                    data: $("#formAssign").serialize(),
+                    success: function(result){
+                        $.messager.progress('close');
+                        layer.msg(result.Message);
+                        if (result.Success) {
+                            dataGrid.datagrid('reload');//刷新主表
+                            //parent.sy.modalDialog.handler.dialog('close');//关闭窗口
+                            layer.close(dlg);
+                        }
+                    },
+                });
+            }
+    }
+    
+    //领料处理提交
+    function submitFormLean(){
+	var isValid = $("#formLean").form('validate');
+        if (isValid) {
+                $.messager.progress();
+                $.ajax({
+                    type: 'POST',
+                    url: "{:url('/admin/record/lean')}",
+                    data: $("#formLean").serialize(),
+                    success: function(result){
+                        $.messager.progress('close');
+                        layer.msg(result.Message);
+                        if (result.Success) {
+                            dataGrid.datagrid('reload');//刷新主表
+                            //parent.sy.modalDialog.handler.dialog('close');//关闭窗口
+                            layer.close(dlg);
+                        }
+                    },
+                });
+            }
+    }
+    
+    //结束处理提交
+    function submitFormEnd(){
+	var isValid = $("#formEnd").form('validate');
+        if (isValid) {
+                $.messager.progress();
+                $.ajax({
+                    type: 'POST',
+                    url: "{:url('/admin/record/end')}",
+                    data: $("#formEnd").serialize(),
+                    success: function(result){
+                        $.messager.progress('close');
+                        layer.msg(result.Message);
+                        if (result.Success) {
+                            dataGrid.datagrid('reload');//刷新主表
+                            //parent.sy.modalDialog.handler.dialog('close');//关闭窗口
+                            layer.close(dlg);
+                        }
+                    },
+                });
+            }
+    }
+</script>
+
+{/block}

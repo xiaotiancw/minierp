@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head id="Head1">
+        <meta charset="utf-8">
+        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+        <title>后台管理首页</title>
+
+        <!-- Meta -->
+
+        <link href="__CSS__/reset.css" rel="stylesheet" type="text/css" />
+        <link href="__EASYUI__/themes/default/easyui.css" rel="stylesheet" type="text/css" />
+        <link href="__CSS__/font-awesome.min.css" rel="stylesheet" type="text/css" />
+        <link href="__CSS__/layout.css" rel="stylesheet" type="text/css" />
+        <script type="text/javascript">
+            var ThinkPHP = {
+                'MODULE': '{:request()->module()}'
+            };
+        </script>
+        <style>
+            .logo {
+                width: 400px;
+                height: 80px;
+                float: left;
+                margin-top: 3px;
+            }
+        </style>
+    </head>
+    <body class="easyui-layout vui-easyui">
+
+        <!-- 头部 -->
+        <div data-options="region:'north',split:false,border:false,border:false" class="viewui-navheader">
+            <!-- header start -->
+<!--            <div class="sys-logo">
+                <a href="javascript:;" class="logoicon">logo图标</a>
+                <a href="javascript:;" class="logo_title">logo名称</a>
+                <a class="line"></a>
+                <a href="javascript:;" class="e">logo副标题</a>
+            </div>-->
+            <div class="logo">
+                <span style='font-size:35px;color: white;margin-left: 10px;;vertical-align: central;'>Modlia 后台管理系统</span>
+            </div>
+            <!-- 菜单横栏 -->
+            <ul class="viewui-navmenu"></ul>
+            <div class="viewui-user">
+                <div class="user-photo">
+                    <i class="fa fa-user-circle-o"></i>
+                </div>
+                <h4 class="user-name ellipsis">{:session('user')['accounts']}</h4>
+                <i class="fa fa-angle-down xiala"></i>
+
+                <div class="viewui-userdrop-down">
+                    <ul class="user-opt">
+                        <li>
+                            <a href="javascript:;">
+                                <i class="fa fa-user"></i>
+                                <span class="opt-name">用户信息</span>
+                            </a>
+                        </li>
+                        <li class="modify-pwd">
+                            <a href="javascript:;" id="editpass">
+                                <i class="fa fa-edit"></i>
+                                <span class="opt-name">修改密码</span>
+                            </a>
+                        </li>
+                        <li class="logout">
+                            <a href="javascript:;" id="loginOut">
+                                <i class="fa fa-power-off"></i>
+                                <span class="opt-name">退出</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!--            <div class="viewui-notice">
+                            <i class="fa fa-volume-up"></i>
+                            <div class="notice-box ellipsis" onmouseout="marqueeInterval[0] = setInterval('startMarquee()', marqueeDelay)" onmouseover="clearInterval(marqueeInterval[0])">
+                            </div>
+                            <div class="notice-opt">
+                                <a href="javascript:;" class="fa fa-caret-up"></a>
+                                <a href="javascript:;" class="fa fa-caret-down"></a>
+                            </div>
+                        </div>-->
+        </div>
+        <!-- // 头部 -->
+
+        <!-- 版权 -->
+        <div data-options="region:'south',split:false,border:false" class="copyright">
+            <div class="footer">
+                <span>  &copy; Copyright ©2016 ~ <font id="timeYear">2019</font>. 蒙德里安© All Rights Reserved.</span>
+                <!--                <span class="pull-right">
+                                    <a href="javascript:;"><i class="fa fa-download"></i> 下载管理</a>
+                                    <a href="javascript:;"><i class="fa fa-volume-up"></i> 消息</a>
+                                </span>-->
+            </div>
+        </div>
+        <!-- // 版权 -->
+        <!-- 左侧菜单 -->
+        <div data-options="region:'west',hide:true,split:false,border:false" title="导航菜单" class="LeftMenu" id="west">
+            <div id="nav" class="easyui-accordion" data-options="fit:true,border:false">
+                <ul id='tree_system' class="easyui-tree" data-options=""></ul>
+            </div>
+        </div>
+        <!-- // 左侧菜单 -->
+
+        <!-- home -->
+        <div data-options="region:'center',border:false" id="mainPanel" class="home-panel">
+            <div id="mainTab" class="easyui-tabs"  data-options="fit:true,closed:false,closable:true,
+                 tools:[{
+                 iconCls:'refresh-panel fa fa-refresh ',
+                 handler:function(){firstrefresh()}
+                 }]"
+                 >
+
+            </div>
+
+        </div>
+        <!-- // home -->
+
+        <div id="menu" class="easyui-menu">
+            <div class="closecur">关闭</div>
+            <div class="closeall">关闭所有</div>
+            <div class="closeother" data-options="iconCls:'icon-cross'">关闭其他所有</div>
+        </div>
+
+        <!--修改密码窗口-->
+        <div data-options="collapsible:false,minimizable:false,maximizable:false" id="updatePwd" class="easyui-window updatePwd" title="修改密码">
+            <div class="row"> 
+                <label for="txtNewPass">新密码：</label>   
+                <input class="easyui-validatebox txt01" id="txtNewPass" type="Password" name="name" />   
+            </div>   
+            <div class="row">   
+                <label for="txtRePass">确认密码:</label>   
+                <input class="easyui-validatebox txt01" id="txtRePass" type="Password" name="Password" />
+            </div>
+            <div data-options="region:'south',border:false" class="pwdbtn">
+                <a id="btnEp" class="easyui-linkbutton " href="javascript:;" >确定</a> 
+                <a id="btnCancel" class="easyui-linkbutton btnDefault" href="javascript:;">取消</a>
+            </div>
+        </div>
+
+
+        <script src="__EASYUI__/jquery.min.js" type="text/javascript"></script>
+        <script src="__EASYUI__/jquery.easyui.min.js" type="text/javascript"></script>
+        
+        <script type="text/javascript">
+            var _menus_oneLeve = [
+                {"menuid": "0", "menuname": "首页", "icon": "fa-home"},
+                {"menuid":"1","menuname":"成功案例","icon":"fa-trophy"},
+                {"menuid":"2","menuname":"特效组件","icon":"fa-inbox"},
+                {"menuid":"3","menuname":"文档帮助","icon":"fa-suitcase"},
+                {"menuid":"4","menuname":"系统管理","icon":"fa-dropbox"}
+            ];
+            $(function () {
+                InitTopMenu();
+                leftTree()
+                addFristPage();
+                openPwd();
+                $('#editpass').click(function () {
+                    $('#updatePwd').window('open');
+                });
+                $('#btnEp').click(function () {
+                    serverLogin();
+                });
+                $('#btnCancel').click(function () {
+                    closePwd();
+                });
+                $('#loginOut').click(function () {
+                    $.messager.confirm('系统提示', '您确定要退出本次登录吗?', function (r) {
+                        if (r) {
+                            location.href = '{:url("login/logout")}';
+                        }
+                    });
+                });
+                setTimeYear();
+
+                //绑定 div 的鼠标事件
+                $('.navmenu-item a').click(function () {
+                    $('.navmenu-item a').removeClass("active");//清空已经选择的元素
+                    $(this).addClass("active");
+                });
+
+                $("#mainPanel").addClass('no_border');//数据展示区域
+                $(".navigation-path").parent().parent().addClass('b_path');//路径
+                $("#mainTab").addClass('no_border');
+                $(".LeftMenu").parent().addClass('b_left');
+                $(".LeftMenu").parent().find(".panel-header").addClass('leftMenuTitle');
+            });
+            /**
+             * 初始化头部菜单
+             */
+            function InitTopMenu() {
+                $.each(_menus_oneLeve, function (i, n) {
+                    var str = '<li class="navmenu-item"> ';
+                    if (i == 0) {
+                        str += '<a class="item active" target="LeftList" id="tommenu_' + n.menuid + '" onClick="InitLeftMenu(\'' + n.menuid + '\')"  onfocus="this.blur();">';
+                    } else {
+                        str += '<a class="item" target="LeftList" id="tommenu_' + n.menuid + '" onClick="InitLeftMenu(\'' + n.menuid + '\')"  onfocus="this.blur();">';
+                    }
+                    str += '<i class="fa ' + n.icon + '"></i>';
+                    str += '<span class="title">' + n.menuname + '</span>';
+                    str += '</a>';
+                    str += '</li>';
+
+                    var s = i;
+                    $(".viewui-navmenu").append(str);
+                });
+            }
+
+            function leftTree() {
+                //左侧菜单
+                $("#tree_system").tree({
+                    url: 'get_tree',
+                    //method:'get',
+                    lines: true,
+                    animate: true,
+                    onClick: function (node) {
+                        //alert(node.url);
+                        if (node.state === 'closed') {
+                            $(this).tree('expand', {target: node.target});
+                        } else if (node.state === 'open') {
+                            $(this).tree('collapse', {target: node.target});
+                        }
+                        var isleaf = $("#tree_system").tree('isLeaf', {target: node.target});
+                        //alert(isleaf);
+                        if (isleaf === true && node.url) {
+                            var tabTitle = node.text;
+                            var url = '../' + node.url;
+                            var icon = 'fa fa-file';//node.iconCls;
+                            addTab(tabTitle, url, icon);
+                        }
+                    }
+                });
+            }
+
+//打开首页
+            function addFristPage() {
+                var $tab = $("#mainTab");
+                $tab.tabs('add', {title: '首页', content: createFrame('kanban.html'), closable: false, icon: 'fa fa-home'});
+            }
+
+            function createFrame(url) {
+                var s = '<iframe frameborder="0" class="main_iframe" src="' + url + '" scrolling="auto" style="width:100%;height:99%;"></iframe>';
+                return s;
+            }
+
+//刷新tap
+            function tabRefresh(url) {
+                var $tab = $("#mainTab");
+                var currentTab = $tab.tabs('getSelected');
+                var src = $(currentTab.panel('options').content).attr('src');
+                if (typeof src === 'string')
+                    src = url;
+                $tab.tabs('update', {tab: currentTab, options: {content: createFrame(src)}})
+            }
+
+
+            function openTabHandler($tab, hasTab, subtitle, url, icon) {
+                if (!hasTab) {
+                    $tab.tabs('add', {title: subtitle, content: createFrame(url), closable: true, icon: icon});
+                } else {
+                    $tab.tabs('select', subtitle);
+                    tabRefresh(url);   //选择TAB时刷新页面
+                }
+                //wrapper.setLocationHash();？
+            }
+
+
+            function addTab(subtitle, url, icon) {
+                if (!url || url === '#')
+                    return false;
+                var $tab = $("#mainTab");
+                var tabCount = $tab.tabs('tabs').length;
+                var hasTab = $tab.tabs('exists', subtitle);
+                if (tabCount < 10) {
+                    openTabHandler($tab, hasTab, subtitle, url, icon);
+                } else {
+                    $.messager.confirm("系统提示", '<b>您当前打开了太多的页面，如果继续打开，会造成程序运行缓慢，无法流畅操作！</b>', function (b) {
+                        if (b) {
+                            openTabHandler($tab, hasTab, subtitle, url, icon);
+                        }
+                    });
+                }
+                //$(".layout-button-left").trigger("click");
+                //tabClose();
+            }
+
+
+//设置登录窗口
+            function openPwd() {
+                $('#updatePwd').window({
+                    title: '修改密码',
+                    width: 300,
+                    modal: true,
+                    shadow: true,
+                    closed: true,
+                    height: 160,
+                    resizable: false});
+            }
+            //关闭登录窗口
+            function closePwd() {
+                $('#updatePwd').window('close');
+            }
+
+            /**
+             * 设置年份(页面底部)
+             */
+            function setTimeYear() {
+                var mydate = new Date();
+                var tm = mydate.getFullYear();
+                $("#timeYear").text(tm);
+            }
+        </script>
+    </body>
+</html>

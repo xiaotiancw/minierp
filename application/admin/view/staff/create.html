@@ -1,0 +1,220 @@
+{extend name="template/base" /}
+
+{block name="main"}
+    <div class="form2-column">
+        <form id="formAdd" class="easyui-form" method="post" data-options="">          
+            <div class="form-column2">
+                <div class="form-column-left">
+                    <input type="text" name="name" class="easyui-textbox" data-options="label:'姓名：',required:true,validType:['NotEmpty','minLength[2]']">
+                </div>
+                <div class="form-column-left  fm-left">
+                    <input type="text" name="gender" class="easyui-combobox" data-options="label:'性别：',required:true,validType:['NotEmpty'], 
+                           data:erp.GenderData,
+                           valueField:'value',
+                           textField:'text',
+                           editable : false,
+                           panelHeight:'auto'">
+                </div>
+            </div>
+            
+            <div class="form-column2">
+                <div class="form-column-left">
+                    <input type="text" name="number" class="easyui-textbox" data-options="label:'工号：',required:true,validType:['NotEmpty','gonghao']">
+                </div>
+                <div class="form-column-left fm-left">
+                    <input type="text" id="group_id" name="group_id" class="easyui-textbox" data-options="label:'职位:',required:true,validType:['combo']">
+                    <input type="hidden" name="post" id="post">
+                </div>
+            </div>
+            
+            <div class="form-column2">
+                <div class="form-column-left">
+                    <input type="text"  name="id_card" class="easyui-textbox" data-options="label:'身份证：',validType:['idcard']">
+                </div>
+                <div class="form-column-left fm-left">
+                    <input type="text" id="type" name="type" class="easyui-textbox" data-options="label:'员工类型',required:true">
+                </div>
+            </div>
+            <div class="form-column2">
+                <div class="form-column-left">
+                    <input type="text" id="tel" name="tel" class="easyui-textbox" data-options="label:'移动电话：',required:true,validType:['mobile']">
+                </div>
+                <div class="form-column-left fm-left">
+                    <input id="marital_status" name="marital_status" class="easyui-textbox" data-options="label:'婚姻状况',required:true">
+                </div>
+            </div>
+            <div class="form-column2">
+                <div class="form-column-left">
+                    <input type="text" id="nation" name="nation" class="easyui-textbox" data-options="label:'民族：',validType:['nation'],prompt:'如：汉族'">
+                </div>
+                <div class="form-column-left fm-left">
+                    <input id="entry_date" name="entry_date" class="easyui-datebox" data-options="label:'入职日期：'">
+                </div>
+            </div>
+            <div class="form-column2">
+                <div class="form-column-left">
+                    <input type="text" id="education" name="education" class="easyui-textbox" data-options="label:'学历：'">
+                </div>
+                <div class="form-column-left fm-left">
+                    <input type="text" id="entry_status" name="entry_status" class="easyui-textbox" data-options="label:'入职状态'">
+                </div>
+
+            </div>
+
+            <div class="form-btnBar pl75">
+                <input type="hidden" name="id"/>
+                <a id='addFormSubmit' href="javascript:void(0)" class="easyui-linkbutton btnPrimary" style="width:80px">保存</a>
+                <a id="addFormClear" href="javascript:void(0)" class="easyui-linkbutton btnDefault" style="width:80px">重置</a>
+            </div>
+        </form>
+    </div>
+
+<script>
+    var add_url =  '{:url("/admin/staff/create")}',
+        group_combogrid_url = '{:url("/admin/group/combo_grid")}';
+
+
+    var addForm = $('#formAdd');
+
+    var group_combogrid = $('#group_id');
+    var staffAddGender = $('#staff-add-gender');
+    var registered = $('#registered');
+    var staffType = $('#type');
+    var marital_status = $('#marital_status');
+    var politics_status = $('#politics_status');
+    var entry_status = $('#entry_status');
+    var education = $('#education');
+    var editor_tool         =        [
+                                    'source', '|',
+                                    'formatblock', 'fontname', 'fontsize','|',
+                                    'forecolor', 'hilitecolor', 'bold','italic', 'underline', 'link',
+                                    'removeformat', '|',
+                                    'justifyleft', 'justifycenter', 'justifyright', '|',
+                                    'insertorderedlist', 'insertunorderedlist','|',
+                                    'emoticons', 'image','baidumap','|',
+                                    'fullscreen'
+    ];
+    $(function () {
+        
+        
+        //职位
+        group_combogrid.combobox({
+            width : 140,
+            height : 32,
+            url : group_combogrid_url,
+//            queryParams : {
+//                all : true
+//            },
+            required : true,
+            editable : false,
+            valueField : 'id',
+            textField : 'title',
+            panelHeight : 'auto'
+        });
+        
+        //员工类型
+        staffType.combobox({
+            width : 140,
+            height : 32,
+            data : erp.WorkerTypeData,
+            editable : false,
+            valueField : 'id',
+            textField : 'text',
+            panelHeight : 'auto'
+        });
+
+        //婚姻状况
+        marital_status.combobox({
+            width : 140,
+            height : 32,
+            data : erp.MaritalData,
+            editable : false,
+            valueField : 'id',
+            textField : 'text',
+            panelHeight : 'auto'
+        });
+        
+        //学历
+        education.combobox({
+            width : 140,
+            height : 32,
+            data : erp.EducationData,
+            editable : false,
+            valueField : 'id',
+            textField : 'text',
+            panelHeight : 'auto'
+        });
+
+        //入职状态
+        entry_status.combobox({
+            width : 140,
+            height : 32,
+            data : erp.EntryData,
+            editable : false,
+            valueField : 'id',
+            textField : 'text',
+            panelHeight : 'auto'
+        });
+
+        //政治面貌
+        politics_status.combobox({
+            width : 140,
+            height : 32,
+            data : erp.PoliticsData,
+            editable : false,
+            valueField : 'id',
+            textField : 'text',
+            panelHeight : 'auto'
+        });
+        
+        //户口
+        registered.combobox({
+            width : 140,
+            height : 32,
+            data : erp.RegisteredData,
+            editable : false,
+            valueField : 'id',
+            textField : 'text',
+            panelHeight : 'auto'
+        });
+        
+        //加载新增编辑器
+//        STAFF_ADD = KindEditor.create('#staff-add-details', {
+//            width : '94%',
+//            height : '200px',
+//            resizeType : 0,
+//            items : editor_tool
+//        });
+        
+
+
+        $("#addFormClear").click(function () {
+            $('#formAdd').form('clear');
+        });
+
+        /**
+         * 提交表单
+         * return
+         */
+        $('#addFormSubmit').click(function () {
+            var isValid = $("#formAdd").form('validate');
+            if (isValid) {
+                $.messager.progress();
+                $.ajax({
+                    type: 'POST',
+                    url: add_url,
+                    data: $("#formAdd").serialize(),
+                    success: function (result) {
+                        $.messager.progress('close');
+                        layer.msg(result.Message);
+                        if (result.Success) {
+                            dataGrid.datagrid('reload');//刷新主表
+                            layer.close(dlg);//关闭窗口
+                        }
+                    }
+                });
+            }
+        });
+    });
+</script>
+{/block}

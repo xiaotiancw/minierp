@@ -1,0 +1,32 @@
+<!-- 领料处理 -->
+<div class="dig-wrapper" id="leanData-wrapper">
+    <div class="form1-column">
+        <form id="formLean" class="easyui-form" method="post" data-options="">
+            <div class="form-column1">
+                <div class="form-column-left">
+                    <input class="easyui-textbox" name="recordid" style="width:100%" data-options="label:'记录号:',required:true,readonly:true">
+                </div>
+            </div>
+            <div class="form-column1">
+                <div class="form-column-left">
+                    <input class="easyui-textbox" name="productid" style="width:100%" data-options="label:'产品型号',required:true,readonly:true">
+                </div>
+            </div>
+            <div class="form-column1">
+                <div class="form-column-left">
+                    <input class="easyui-combobox" name="lean_treatperson" style="width:100%" data-options="label:'领料处理人',required:true,
+                           data:erp.PersonData,
+                           valueField:'value',
+                           textField:'text',
+                           panelHeight:200">
+                </div>
+            </div>
+
+            <div class="form-btnBar pl75">
+                <input type="hidden" name="id"/>
+                <input type="submit" name="" value="保存" class="easyui-linkbutton btnPrimary" onclick="submitFormLean()" style="width:80px" />
+                <input type="submit" name="" value="重置" class="easyui-linkbutton btnDefault" onclick="clearForm()" style="width:80px" />
+            </div>
+        </form>
+    </div>
+</div>
