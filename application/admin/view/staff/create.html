@@ -4,7 +4,7 @@
 <form id="formAdd" method="post" > 
     <div class="easyui-tabs" data-options="footer:'#footer'">
 
-        <div class="form2-column" title="必填" style="padding:10px;">
+        <div class="form2-column" title="必填信息" style="padding:10px;">
 
             <div class="form-column2">
                 <div class="form-column-left">
@@ -51,7 +51,7 @@
                     <input type="text" id="nation" name="nation" class="easyui-textbox" data-options="label:'民族：',validType:['nation'],prompt:'如：汉族'">
                 </div>
                 <div class="form-column-left fm-left">
-                    <input id="entry_date" name="entry_date" class="easyui-datebox" data-options="label:'入职日期：'">
+                    <input id="entry_date" name="entry_date" class="easyui-datebox" data-options="label:'入职日期：',editable : false," value="{:get_date()}">
                 </div>
             </div>
             <div class="form-column2">
@@ -64,34 +64,34 @@
             </div>
             <div class="form-column2">
                 <div class="form-column-left">
-                    <input type="text" id="education" name="specialty" class="easyui-textbox" data-options="label:'专业：'">
+                    <input type="text" id="specialty" name="specialty" class="easyui-textbox" data-options="label:'专业：'">
                 </div>
                 <div class="form-column-left fm-left">
-                    <input type="text" id="entry_status" name="politics_status" class="easyui-textbox" data-options="label:'政治面貌：'">
+                    <input type="text" id="politics_status" name="politics_status" class="easyui-textbox" data-options="label:'政治面貌：'">
                 </div>
             </div>
             <div class="form-column2">
                 <div class="form-column-left">
-                    <input type="text" id="education" name="health" class="easyui-textbox" data-options="label:'健康状况：'">
+                    <input type="text" id="health" name="health" class="easyui-textbox" data-options="label:'健康状况：'">
                 </div>
                 <div class="form-column-left fm-left">
-                    <input type="text" id="entry_status" name="registered" class="easyui-textbox" data-options="label:'户口：'">
+                    <input type="text" id="registered" name="registered" class="easyui-textbox" data-options="label:'户口：'">
                 </div>
             </div>
 
             <div class="form-column2">
                 <div class="form-column-left">
-                    <input type="text" id="education" name="registered-address" class="easyui-textbox" data-options="label:'户口所在地：'">
+                    <input type="text" id="registered_address" name="registered_address" class="easyui-textbox" data-options="label:'户口所在地：'">
                 </div>
                 <div class="form-column-left fm-left">
-                    <input type="text" id="entry_status" name="graduate-colleges" class="easyui-textbox" data-options="label:'毕业院校：'">
+                    <input type="text" id="graduate_colleges" name="graduate_colleges" class="easyui-textbox" data-options="label:'毕业院校：'">
                 </div>
             </div>
 
 
 
         </div>
-        <div class="form2-column" title="非必需" style="padding:10px;">
+        <div class="form2-column" title="选填信息" style="padding:10px;">
             <div class="form-column1">
                 <div class="form-column-left">
                     <input class="easyui-textbox" name="intro" style="width:100%;height:60px" data-options="label:'个人简介：',multiline:true,prompt:'255字内简单介绍一下自己！'">
@@ -151,7 +151,11 @@
             editable : false,
             valueField : 'id',
             textField : 'title',
-            panelHeight : 'auto'
+            panelHeight : 'auto',
+            onSelect:function(record){
+                //console.log(record);
+                $('#post').val(record.title);
+            }
         });
         
         //员工类型
@@ -240,6 +244,9 @@
          */
         $('#addFormSubmit').click(function () {
             var isValid = $("#formAdd").form('validate');
+            var details = $.trim(STAFF_ADD.html());
+            $('#details').val(details);
+            //alert(details);
             if (isValid) {
                 $.messager.progress();
                 $.ajax({
@@ -250,8 +257,10 @@
                         $.messager.progress('close');
                         layer.msg(result.Message);
                         if (result.Success) {
-                            dataGrid.datagrid('reload');//刷新主表
-                            layer.close(dlg);//关闭窗口
+                            parent.dataGrid.datagrid('reload');//刷新主表
+                            //layer.close(parent.dlg);//关闭窗口
+                            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                            parent.layer.close(index); //再执行关闭   
                         }
                     }
                 });

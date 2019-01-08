@@ -7,16 +7,16 @@ class Staff extends \app\common\controller\BaseController
     public function combo_grid($page = 1, $rows = 20, $sort = 'id', $order = 'desc') {
         if ($this->request->isAjax()) {
             $where = ['user_id' => 0];
-            $count = db('staff')->where($where)->count();
-            $list = db('staff')->where($where)->order([$sort => $order])->limit($rows)->page($page)->select();
+            $count = Db::name('staff')->where($where)->count();
+            $list = Db::name('staff')->where($where)->order([$sort => $order])->limit($rows)->page($page)->select();
             return ['total' => $count, 'rows' => $list ? $list : ''];
         }
     }
 
     public function data_grid($page = 1, $rows = 20, $sort = 'id', $order = 'desc') {
         if ($this->request->isAjax()) {
-            $count = db('staff')->count();
-            $list = db('staff')->order([$sort => $order])->limit($rows)->page($page)->select();
+            $count = Db::name('staff')->count();
+            $list = Db::name('staff')->order([$sort => $order])->limit($rows)->page($page)->select();
             return ['total' => $count, 'rows' => $list ? $list : ''];
         }
     }
@@ -25,7 +25,7 @@ class Staff extends \app\common\controller\BaseController
     public function check_number() {
         if ($this->request->isAjax()) {
             $num = input('post.number');
-            $count = db('staff')->where('number', $num)->count();
+            $count = Db::name('staff')->where('number', $num)->count();
             return ($count > 0) ? false : true;
         }
     }
@@ -37,7 +37,10 @@ class Staff extends \app\common\controller\BaseController
 //                $data['dimission_date'] = null;
 //            }
             $data['create_time'] = get_time();
+            //var_dump($data);
             $result = 0;
+            //$data['staff_id'] = Db::name('staff')->strict(false)->insertGetId($data);
+            //$result = Db::name('staff_extend')->strict(false)->insert($data);
             //启动事务
             Db::startTrans();
             try {
@@ -60,24 +63,35 @@ class Staff extends \app\common\controller\BaseController
         }
     }
 
-    public function detail() {
+    public function getOne() {
         $id = input('id/d', 0);
-        $model = db('staff')->find($id);
-        $model_extend = db('staff_extend')->where('staff_id', $id)->find();
-        $res = array_merge($model, $model_extend);
+        $model = Db::name('staff')->find($id);
+        $model_extend = Db::name('staff_extend')->where('staff_id', $id)->find();
+        if($model_extend){
+            $res = array_merge($model, $model_extend);
+        }else{
+            $res = $model;
+        }
         //dump($res);
         //return json_encode($model) . json_encode($model_extend);
         return json($res);
     }
+    
+    public function detail() {
+        $id = input('id/d', 0);
+        $this->assign('id',$id);
+        return view();
+    }
 
+    
     public function delete() {
         $ids = input('ids', '');
         // 根据主键删除
         //启动事务
         Db::startTrans();
         try {
-            db('staff')->delete($ids);
-            $result = db('staff_extend')->where('staff_id', 'in', $ids)->delete();
+            Db::name('staff')->delete($ids);
+            $result = Db::name('staff_extend')->where('staff_id', 'in', $ids)->delete();
             // 提交事务
             Db::commit();
         } catch (\Exception $e) {
@@ -97,10 +111,11 @@ class Staff extends \app\common\controller\BaseController
             $data = input('post.');
             //启动事务
             Db::startTrans();
+            $result = 0;
             try {
                 //$userId = Db::name('user')->strict(false)->insertGetId($data);
-                db('staff')->update($data);
-                $result = db('staff_extend')->where('staff_id', $id)->update($data);
+                Db::name('staff')->strict(FALSE)->update($data);
+                $result = Db::name('staff_extend')->where('staff_id', $data['id'])->strict(FALSE)->update($data);
                 // 提交事务
                 Db::commit();
             } catch (\Exception $e) {
@@ -114,9 +129,9 @@ class Staff extends \app\common\controller\BaseController
             }
         } else {
             $id = input('id/d', 0);
-            $model = db('staff_extend')->where('staff_id', $id)->find();
+            //$model = Db::name('staff_extend')->where('staff_id', $id)->find();
             $this->assign('id', $id);
-            $this->assign('details', $model['details']);
+            //$this->assign('details', $model['details']);
             return view();
         }
     }
