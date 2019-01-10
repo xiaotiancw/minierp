@@ -139,7 +139,7 @@
                                     'fullscreen'
     ];
     $(function () {
-        addForm.form('load', detail_url + "?id=" + {:$id});
+        
         //职位
         group_combogrid.combobox({
             width : 140,
@@ -233,7 +233,7 @@
             items : editor_tool
         });
         
-
+        addForm.form('load', detail_url + "?id=" + {:$id});
 
         $("#addFormClear").click(function () {
             $('#formAdd').form('clear');
