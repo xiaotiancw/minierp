@@ -12,11 +12,9 @@
 
     </div>
     <div class="tool-search" style="padding:5px 0 0 0;">
-        <label for="search_number" style="margin-left: 10px;">工号：</label>
-        <input type="text" id="search_number" class="easyui-textbox">
-        <label for="search_name">姓名：</label>
-        <input type="text" id="search_name" class="easyui-textbox">
-        <label for="search_startDate">入职时间区间：</label>
+        <label for="search_keyword1" style="margin-left: 10px;">职位：</label>
+        <input type="text" id="search_keyword1" class="easyui-textbox">
+        <label for="search_startDate">时间区间：</label>
         <input type="text" id="search_startDate" class="easyui-datebox" data-options="editable:false">
         <label for="search_endDate">-</label>
         <input type="text" id="search_endDate" class="easyui-datebox" data-options="editable:false">
@@ -26,12 +24,12 @@
 <table id="dataGrid" data-options="border:false"></table>
 
 <script type="text/javascript">
-        var datagrid_url =  '{:url("/admin/staff/data_grid")}',
-            add_url =  '{:url("/admin/staff/create")}',
-            edit_url =  '{:url("/admin/staff/edit")}',
-            delete_url =  '{:url("/admin/staff/delete")}',
-            detail_url =  '{:url("/admin/staff/detail")}',
-            export_url = '{:url("/admin/staff/export")}',
+        var datagrid_url =  '{:url("/admin/group/data_grid")}',
+            add_url =  '{:url("/admin/group/create")}',
+            edit_url =  '{:url("/admin/group/edit")}',
+            delete_url =  '{:url("/admin/group/delete")}',
+            detail_url =  '{:url("/admin/group/detail")}',
+            export_url = '{:url("/admin/group/export")}',
             staff_combogrid_url = '{:url("/admin/staff/combo_grid")}';
     var dataGrid;
     var dlg = '';
@@ -54,26 +52,24 @@
             //singleSelect: true,//单选模式
             rownumbers: true, //行号
             columns: [[
-                    {field : 'id',title : '自动编号',width : 100,checkbox : true},
-                    {field : 'number',title : '工号',width : 70,sortable : true},
-                    {field : 'name',title : '姓名',width : 100},
-                    {field : 'gender',title : '性别',width : 70},
-                    {field : 'id_card',title : '身份证',width : 170},
-                    {field : 'post',title : '职位',width : 100},
-                    {field : 'nation',title : '民族',width: 100},
-                    {field: 'type',title: '员工类型',width: 100},
-                    {field: 'tel',title: '移动电话',width: 120},
-                    {field: 'entry_status',title: '入职状态',width: 100},
-                    {field: 'entry_date',title: '入职时间',width: 100},
-                    {field: 'marital_status',title: '婚姻状况',width: 100},
-                    {field: 'education',title: '学历',width: 70},
-                    {field: 'create_time',title: '创建时间',hidden: true},
-                    {field: 'details',title: '详情',width: 40,fixed: true,
-                        formatter: function (value, row,index){
-                            //return "<a>详情</a>";
-                            return '<a href="javascript:void(0)" class="easyui-linkbutton" data-options="" style="height: 18px;margin-left: 2px;" onclick="details(' + row.id + ')">详情</a>';
+                    {field : 'id',title : '编号',width : 100,checkbox : true},
+                    {field : 'title',title : '职位',width : 100},
+                    {field: 'status',title: '状态',width: 100,
+                        formatter:function(value, row,index){
+                            if(value === 1){
+                                return '正常';
+                            }else{
+                                return '<span style="color:red">冻结</span>';
+                            }
                         }
-                    }
+                    },
+                    {field: 'create_time',title: '创建时间',sortable:true},
+//                    {field: 'details',title: '详情',width: 40,fixed: true,
+//                        formatter: function (value, row,index){
+//                            //return "<a>详情</a>";
+//                            return '<a href="javascript:void(0)" class="easyui-linkbutton" data-options="" style="height: 18px;margin-left: 2px;" onclick="details(' + row.id + ')">详情</a>';
+//                        }
+//                    }
                 ]]
         });
 
@@ -83,14 +79,12 @@
         });
 
         $('#search').click(function () {
-            var number = $('#search_number').textbox('getValue');
-            var name = $('#search_name').textbox('getValue');
+            var keyword1 = $('#search_keyword1').textbox('getValue');
             var startDate = $('#search_startDate').textbox('getValue');
             var endDate = $('#search_endDate').textbox('getValue');
             dataGrid.datagrid({
                 queryParams: {
-                    number : number,
-                    name: name,
+                    keyword1 : keyword1,
                     endDate: endDate,
                     startDate: startDate
                 }
@@ -101,13 +95,13 @@
         $('.add').on('click', function () {
             //$('#formAdd').form('clear');
             dlg = layer.open({
-                title: '新增员工信息',
+                title: '新增职位信息',
                 type: 2,
                 skin: 'layui-layer-rim', //加上边框
                 shadeClose: true,
                 shade: 0.5,
                 maxmin: true, //开启最大化最小化按钮
-                area: ['1000px', '560px'], //宽高
+                area: ['480px', '240px'], //宽高
                 content: [add_url,'yes'],
                 zIndex: 1000
             });
@@ -120,13 +114,13 @@
             if (row) {
                 var id = row.id;
                 dlg = layer.open({
-                    title: '编辑员工信息',
+                    title: '编辑职位信息',
                     type: 2,
                     skin: 'layui-layer-rim', //加上边框
                     shadeClose: true,
                     shade: false,
                     maxmin: true, //开启最大化最小化按钮
-                    area: ['1000px', '560px'], //宽高
+                    area: ['480px', '240px'], //宽高
                     content: edit_url + "?id=" + id,
                     zIndex: 1000
                 });

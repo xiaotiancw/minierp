@@ -5,8 +5,20 @@ class Group extends BaseController
 {   
     public function data_grid($page = 1, $rows = 20, $sort = 'id', $order = 'desc') {
         if($this->request->isAjax()){
-            $count = db('auth_group')->count();
-            $list = db('auth_group')->order([$sort => $order])->limit($rows)->page($page)->select();
+            $keyword1 = input('keyword1','');//职位
+            $startDate = input('startDate','');
+            $endDate = input('endDate','');
+            $where = [];
+            if($keyword1){
+                $where1 = [['title', 'like', "%$keyword1%"]];
+                $where = array_merge($where,$where1);
+            }
+            if($startDate && $endDate){
+                $where3 = [['create_time', 'between time', [$startDate, $endDate]]];
+                $where = array_merge($where,$where3);
+            }
+            $count = db('auth_group')->where($where)->count();
+            $list = db('auth_group')->where($where)->order([$sort => $order])->limit($rows)->page($page)->select();
             return ['total'=>$count, 'rows'=> $list ? $list: ''];
         }
     }

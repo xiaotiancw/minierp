@@ -17,7 +17,7 @@ return [
     'admin'     => [
         '__file__'   => ['common.php'],
         '__dir__'    => ['behavior', 'controller', 'model', 'view'],
-        'controller' => ['Index', 'Login', 'User','Staff','Record'],
+        'controller' => ['Index', 'Login', 'User','Staff','Group','Record'],
         'model'      => ['User'],
         'view'       => [
             'index/index',
@@ -28,6 +28,10 @@ return [
             'staff/index',
             'staff/create',
             'staff/edit',
+            'group/index',
+            'group/create',
+            'group/edit',
+            'group/detail',
             'record/index',
             'record/create',
             'record/edit',

@@ -1,0 +1,73 @@
+{extend name="template/base_scroll" /}
+
+{block name="main"}
+<div class="form1-column" title="必填信息">
+    <form id="formAdd" method="post"> 
+
+        <div class="form-column1">
+            <div class="form-column-left">
+                <input type="text" name="title" class="easyui-textbox" data-options="label:'职位：',required:true,validType:['NotEmpty','length[2,20]']">
+            </div>
+        </div>
+        <div class="form-column1">
+            <div class="form-column-left">
+                <input id="state" name="status" class="easyui-combobox" value="1" data-options="label:'状态：',required:true,
+                       data:StateData,
+                        valueField:'value',
+                        textField:'text',
+                        editable : false,
+                        panelHeight:'auto'">
+            </div>
+            <input type="hidden" name='id'/>
+        </div>
+        
+        <div class="form-btnBar pl75" id="footer">
+            <a id='addFormSubmit' href="javascript:void(0)" class="easyui-linkbutton btnPrimary" style="width:80px">保存</a>
+            <a id="addFormClear" href="javascript:void(0)" class="easyui-linkbutton btnDefault" style="width:80px">重置</a>
+        </div>
+    </form>
+</div>
+<script>
+    var edit_url =  '{:url("/admin/group/edit")}';
+    var detail_url = '{:url("/admin/group/detail")}';
+
+    var addForm = $('#formAdd');
+    StateData = [
+        { "value": 1, "text": "正常" },
+        { "value": 0, "text": "冻结" }
+    ];
+    
+    $(function () {
+        addForm.form('load', detail_url + "?id=" + {:$id});
+        
+        $("#addFormClear").click(function () {
+            $('#formAdd').form('clear');
+        });
+
+        /**
+         * 提交表单
+         * return
+         */
+        $('#addFormSubmit').click(function () {
+            var isValid = $("#formAdd").form('validate');
+            if (isValid) {
+                $.messager.progress();
+                $.ajax({
+                    type: 'POST',
+                    url: edit_url,
+                    data: $("#formAdd").serialize(),
+                    success: function (result) {
+                        $.messager.progress('close');
+                        layer.msg(result.Message);
+                        if (result.Success) {
+                            parent.dataGrid.datagrid('reload');//刷新主表
+                            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                            parent.layer.close(index); //再执行关闭   
+                        }
+                    }
+                });
+            }
+        });
+    });
+</script>
+{/block}

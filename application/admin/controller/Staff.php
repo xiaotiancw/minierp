@@ -15,8 +15,26 @@ class Staff extends \app\common\controller\BaseController
 
     public function data_grid($page = 1, $rows = 20, $sort = 'id', $order = 'desc') {
         if ($this->request->isAjax()) {
-            $count = Db::name('staff')->count();
-            $list = Db::name('staff')->order([$sort => $order])->limit($rows)->page($page)->select();
+            $number = input('number','');//工号
+            $name = input('name','');//姓名
+            $startDate = input('startDate','');
+            $endDate = input('endDate','');
+            $where = [];
+            if($number){
+                $where1 = [['number', 'like', "%$number%"]];
+                $where = array_merge($where,$where1);
+            }
+            if($name){
+                $where1 = [['name', 'like', "%$name%"]];
+                $where = array_merge($where,$where1);
+            }
+            if($startDate && $endDate){
+                $where3 = [['entry_date', 'between time', [$startDate, $endDate]]];
+                $where = array_merge($where,$where3);
+            }
+            
+            $count = Db::name('staff')->where($where)->count();
+            $list = Db::name('staff')->where($where)->order([$sort => $order])->limit($rows)->page($page)->select();
             return ['total' => $count, 'rows' => $list ? $list : ''];
         }
     }
@@ -79,6 +97,10 @@ class Staff extends \app\common\controller\BaseController
     
     public function detail() {
         $id = input('id/d', 0);
+        $model_extend = Db::name('staff_extend')->where('staff_id', $id)->find();
+        if($model_extend){
+            $this->assign('staff_extend',$model_extend);
+        }
         $this->assign('id',$id);
         return view();
     }
@@ -129,9 +151,11 @@ class Staff extends \app\common\controller\BaseController
             }
         } else {
             $id = input('id/d', 0);
-            //$model = Db::name('staff_extend')->where('staff_id', $id)->find();
+            $model_extend = Db::name('staff_extend')->where('staff_id', $id)->find();
+            if($model_extend){
+                $this->assign('staff_extend',$model_extend);
+            }
             $this->assign('id', $id);
-            //$this->assign('details', $model['details']);
             return view();
         }
     }

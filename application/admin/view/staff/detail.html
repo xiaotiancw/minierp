@@ -101,7 +101,7 @@
             <div class="form-column1">
                 <div class="form-column-left">
                     详情：
-                    <textarea id="details" name="details"></textarea>
+                    <textarea id="details" name="details">{:$staff_extend.details}</textarea>
                 </div>
             </div>
 
@@ -139,7 +139,7 @@
                                     'fullscreen'
     ];
     $(function () {
-        
+        addForm.form('load', detail_url + "?id=" + {:$id});
         //职位
         group_combogrid.combobox({
             width : 140,
@@ -224,16 +224,17 @@
             textField : 'text',
             panelHeight : 'auto'
         });
-        
+
         //加载新增编辑器
         STAFF_ADD = KindEditor.create('#details', {
             width : '100%',
             height : '280px',
+            readonlyMode : true,
             resizeType : 0,
             items : editor_tool
         });
         
-        addForm.form('load', detail_url + "?id=" + {:$id});
+        
 
         $("#addFormClear").click(function () {
             $('#formAdd').form('clear');
