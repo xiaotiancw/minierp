@@ -1,26 +1,24 @@
 <?php
 namespace app\admin\controller;
 use app\common\controller\BaseController;
+use think\Db;
 class Auth extends BaseController {
     
     public function data_grid($page = 1, $rows = 20, $sort = 'id', $order = 'desc') {
         if($this->request->isAjax()){
-            $count = db('auth_group')->count();
-            $list = db('auth_group')->order([$sort => $order])->limit($rows)->page($page)->select();
+            $count = Db::name('auth_group')->count();
+            $list = Db::name('auth_group')->order([$sort => $order])->limit($rows)->page($page)->select();
             //对rules转换
             foreach ($list as $key => $value) {
-                $titleArray = db('auth_rule')->field('title')->where('id','in',$value['rules'])->select();
+                $titleArray = Db::name('auth_rule')->field('title')->where('id','in',$value['rules'])->select();
                 if ($titleArray) {
                     $title = '';
-
                     foreach ($titleArray as $key2 => $value2) {
                         $title .= $value2['title'] . ',';
                     }
-
                     $list[$key]['title_rules'] = substr($title, 0, -1);
                 }
             }
-            
             return ['total'=>$count, 'rows'=> $list ? $list: ''];
         }
     }    
@@ -30,7 +28,7 @@ class Auth extends BaseController {
         if($this->request->isPost()){
             $data = input('post.');
             $data['create_time'] = get_time();
-            $result = db('auth_group')->insert($data);
+            $result = Db::name('auth_group')->insert($data);
             if($result){
                 return ['Success'=>true,'Message'=>'添加成功！'];
             }else{
@@ -44,7 +42,7 @@ class Auth extends BaseController {
     }
     
     public function get_auth_rule($rules = '') {
-        $list = db('auth_rule')->field('id,name AS url,title AS text,iconCls,pid')->select();
+        $list = Db::name('auth_rule')->field('id,name AS url,title AS text,iconCls,pid')->select();
         if(!empty($rules)){
             //得到需要选择的数组
             $rules_array = explode(',', $rules);
@@ -63,7 +61,7 @@ class Auth extends BaseController {
         if($this->request->isPost()){
             $data = input('post.');
             //dump($data);
-            $result = db('auth_group')->update($data);
+            $result = Db::name('auth_group')->update($data);
             if($result){
                 return ['Success'=>true,'Message'=>'更新成功！'];
             }else{
@@ -72,10 +70,21 @@ class Auth extends BaseController {
             
         } else {
             $id = input('id/d',0);
-            $model = db('auth_group')->find($id);
+            $model = Db::name('auth_group')->find($id);
             $this->assign('vo', $model);
             //$this->assign('id', $id);
             return view();
+        }
+    }
+    
+    public function delete() {
+        $ids = input('ids','');
+        // 根据主键删除
+        $result = db('auth_group')->delete($ids);
+        if ($result) {
+            return ['Success' => true, 'Message' => '删除成功！'];
+        } else {
+            return ['Success' => false, 'Message' => '删除失败！'];
         }
     }
 }

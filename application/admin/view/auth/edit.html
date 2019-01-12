@@ -1,0 +1,102 @@
+{extend name="template/base_scroll" /}
+
+{block name="main"}
+
+<div class="form1-column" title="必填信息">
+    <form id="formAdd" method="post"> 
+
+        <div class="form-column1">
+            <div class="form-column-left">
+                <input type="text" id="title" name="title" value="{$vo.title}" class="easyui-textbox" data-options="label:'职位：',required:true,validType:['NotEmpty','length[2,20]']">
+            </div>
+        </div>
+        <div class="form-column1">
+            <div class="form-column-left">
+                <input id="status" name="status" class="easyui-combobox" value="{$vo.status}" data-options="label:'状态：',required:true,
+                       data:StateData,
+                        valueField:'value',
+                        textField:'text',
+                        editable : false,
+                        panelHeight:'auto'">
+            </div>
+        </div>
+        <div class="form-column1">
+            <div class="form-column-left" id="auth_rules">
+            </div>
+            <input type="hidden" name="id" id="id" value="{$vo.id}" />
+        </div>
+        <div class="form-btnBar pl75" id="footer">
+            <a id='addFormSubmit' href="javascript:void(0)" class="easyui-linkbutton btnPrimary" style="width:80px">保存</a>
+            <a id="addFormClear" href="javascript:void(0)" class="easyui-linkbutton btnDefault" style="width:80px">重置</a>
+        </div>
+    </form>
+</div>
+
+
+
+<script>
+    var edit_url =  '{:url("/admin/auth/edit")}';
+    var auth_tree_url = '{:url("/admin/auth/get_auth_rule")}';
+    StateData = [
+        { "value": 1, "text": "正常" },
+        { "value": 0, "text": "冻结" }
+    ];
+
+    var addForm = $('#formAdd');
+    var auth_rules = $('#auth_rules');
+
+    $(function () {
+        auth_rules.tree({
+            url: auth_tree_url,
+            queryParams : {
+                rules : '{$vo.rules}'
+            },
+            lines: true,
+            animate: true,
+            checkbox : true
+        });
+   
+        $("#addFormClear").click(function () {
+            $('#formAdd').form('clear');
+        });
+
+        /**
+         * 提交表单
+         * return
+         */
+        $('#addFormSubmit').click(function () {
+            var isValid = $("#formAdd").form('validate');
+            var ids = [];
+            var rules = auth_rules.tree('getChecked');
+            for (var i = 0; i < rules.length; i ++) {
+                if (rules[i]['nid'] != 0) {
+                    ids.push(rules[i]['id']);
+                }
+            }
+            //console.log(ids);
+            if (isValid) {
+                $.messager.progress();
+                $.ajax({
+                    type: 'POST',
+                    url: edit_url,
+                    data: {
+                        title : $('#title').textbox('getValue'),
+                        status : $('#status').combobox('getValue'),
+                        rules : ids.join(','),
+                        id : $('[name="id"]').val()
+                    },
+                    success: function (result) {
+                        $.messager.progress('close');
+                        if (result.Success) {
+                            parent.dataGrid.datagrid('reload');//刷新主表
+                            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                            parent.layer.close(index); //再执行关闭   
+                        }
+                        parent.layer.msg(result.Message);
+                    }
+                });
+            }
+        });
+    });
+</script>
+{/block}

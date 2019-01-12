@@ -55,10 +55,7 @@ class Staff extends \app\common\controller\BaseController
 //                $data['dimission_date'] = null;
 //            }
             $data['create_time'] = get_time();
-            //var_dump($data);
             $result = 0;
-            //$data['staff_id'] = Db::name('staff')->strict(false)->insertGetId($data);
-            //$result = Db::name('staff_extend')->strict(false)->insert($data);
             //启动事务
             Db::startTrans();
             try {

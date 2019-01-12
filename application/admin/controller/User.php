@@ -18,12 +18,21 @@ class User extends \app\common\controller\BaseController
             $data = input('post.');
             $data['create_time'] = get_time();
             $data['password'] = md5($data['password']);
-            //$result = 0;
+            $result = 0;
             // 启动事务
             Db::startTrans();
             try {
                 $userId = Db::name('user')->strict(false)->insertGetId($data);
-                $result = Db::name('staff')->update(['id' => $data['staff_id'], 'user_id' => $userId]);
+                $staff = Db::name('staff')->find($data['staff_id']);
+                if($staff){
+                    $result1 = Db::name('staff')->update(['id' => $data['staff_id'], 'user_id' => $userId]);
+                    //新增用户权限分配
+                    $result2 = Db::name('auth_group_access')->insert([
+                        'uid' => $userId,
+                        'group_id' => $staff['group_id']
+                    ]);
+                }
+                $result = $result1 && $result2;
                 // 提交事务
                 Db::commit();
             } catch (\Exception $e) {
@@ -54,6 +63,7 @@ class User extends \app\common\controller\BaseController
             Db::name('staff')->where('user_id', 'in', $ids)->setField('user_id', 0);
             // 根据主键删除
             Db::name('user')->delete($ids);
+            Db::name('auth_group_access')->where('uid', 'in', $ids)->delete();
             // 提交事务
             Db::commit();
             return ['Success' => true, 'Message' => '删除成功！'];
@@ -73,8 +83,19 @@ class User extends \app\common\controller\BaseController
             try {
                 $user = Db::name('user')->find($data['id']);
                 Db::name('staff')->update(['id' => $user['staff_id'], 'user_id' => 0]);
+                
+                Db::name('auth_group_access')->where('uid', $data['id'])->delete();
+                
                 $result = Db::name('user')->strict(false)->update($data);
-                $result = Db::name('staff')->update(['id' => $data['staff_id'], 'user_id' => $data['id']]);
+                $staff = Db::name('staff')->find($data['staff_id']);
+                if($staff){
+                    $result = Db::name('staff')->update(['id' => $data['staff_id'], 'user_id' => $data['id']]);
+                    //新增用户权限分配
+                    $result2 = Db::name('auth_group_access')->insert([
+                        'uid' => $user['id'],
+                        'group_id' => $staff['group_id']
+                    ]);
+                }
                 // 提交事务
                 Db::commit();
             } catch (\Exception $e) {
