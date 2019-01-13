@@ -65,11 +65,11 @@
         $('#addFormSubmit').click(function () {
             var isValid = $("#formAdd").form('validate');
             var ids = [];
-            var rules = auth_rules.tree('getChecked');
+            var rules = auth_rules.tree('getChecked', ['checked','indeterminate']);
             for (var i = 0; i < rules.length; i ++) {
-                if (rules[i]['nid'] != 0) {
+                //if (rules[i]['pid'] != 0) {
                     ids.push(rules[i]['id']);
-                }
+                //}
             }
             //console.log(ids);
             if (isValid) {

@@ -146,11 +146,11 @@
         
         <script type="text/javascript">
             var _menus_oneLeve = [
-                {"menuid": "0", "menuname": "首页", "icon": "fa-home"},
-                {"menuid":"1","menuname":"成功案例","icon":"fa-trophy"},
-                {"menuid":"2","menuname":"特效组件","icon":"fa-inbox"},
-                {"menuid":"3","menuname":"文档帮助","icon":"fa-suitcase"},
-                {"menuid":"4","menuname":"系统管理","icon":"fa-dropbox"}
+                {"menuid": "1", "menuname": "首页", "icon": "fa-home"},
+//                {"menuid":"4","menuname":"成功案例","icon":"fa-trophy"},
+//                {"menuid":"2","menuname":"特效组件","icon":"fa-inbox"},
+//                {"menuid":"3","menuname":"文档帮助","icon":"fa-suitcase"},
+//                {"menuid":"7","menuname":"系统管理","icon":"fa-dropbox"}
             ];
             $(function () {
                 InitTopMenu();
@@ -207,11 +207,19 @@
                     $(".viewui-navmenu").append(str);
                 });
             }
+            
+            var treeUrl = '{:url("admin/index/get_tree")}';
+            
+//            function InitLeftMenu(menuId){
+//                var url = treeUrl + '?pid=' + menuId;
+//                leftTree(url);
+//            }
+            
 
-            function leftTree() {
+            function leftTree(url) {
                 //左侧菜单
                 $("#tree_system").tree({
-                    url: 'get_tree',
+                    url: treeUrl,
                     //method:'get',
                     lines: true,
                     animate: true,

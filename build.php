@@ -17,34 +17,31 @@ return [
     'admin'     => [
         '__file__'   => ['common.php'],
         '__dir__'    => ['behavior', 'controller', 'model', 'view'],
-        'controller' => ['Index', 'Login', 'User','Staff','Group','Record'],
+        'controller' => [
+            'Index', 'Login', 'User','Staff','Group', 'Auth', 'Log',
+            'Record','Alarm','Assign'
+            ],
         'model'      => ['User'],
         'view'       => [
             'index/index',
             'login/index',
-            'user/index',
-            'user/create',
-            'user/edit',
-            'staff/index',
-            'staff/create',
-            'staff/edit',
-            'group/index',
-            'group/create',
-            'group/edit',
-            'group/detail',
-            'auth/index',
-            'auth/create',
-            'auth/edit',
-            'auth/detail',
-            'record/index',
-            'record/create',
-            'record/edit',
+            'user/index','user/create','user/edit',
+            'staff/index','staff/create','staff/edit',
+            'group/index','group/create','group/edit','group/detail',
+            'auth/index','auth/create','auth/edit','auth/detail',
+            'log/index',
+            /*生产记录 */
+            'record/index','record/create','record/edit',
             'record/expired',//已过交期列表
             'record/sha',//纱线处理
             'record/mtr',//备料处理
             'record/assign',//生产排单处理
             'record/lean',//领料处理
             'record/end',//领料处理
+            /*加急处理通知 */
+            'alarm/index',
+            /*生产排单 */
+            'assign/index',
         ],
     ],
     'home' => [
