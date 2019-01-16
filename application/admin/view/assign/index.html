@@ -37,12 +37,14 @@
             .right table{
                 background:#E0ECFF;
                 width:100%;
+                border: 1px solid;
             }
             .right td{
                 background:#fafafa;
                 color:#444;
                 text-align:center;
                 padding:2px;
+                border: 1px solid;
             }
             .right td{
                 background:#E0ECFF;
@@ -74,109 +76,38 @@
         <div data-options="region:'west',split:true" title="需生产产品" style="width:30%;">
             <div class="left">
                 <table>
+                    {volist name='record_list' id='record'}
                     <tr>
-                        <td><div class="item">English</div></td>
+                        <td><div class="item" title="({$record.sale_type}/{$record.num}m/{$record.deviceid})">{$record.productid}</div></td>
                     </tr>
+                    {/volist}
                     <tr>
-                        <td><div class="item">Science</div></td>
-                    </tr>
-                    <tr>
-                        <td><div class="item">Music</div></td>
-                    </tr>
-                    <tr>
-                        <td><div class="item">History</div></td>
-                    </tr>
-                    <tr>
-                        <td><div class="item">Computer</div></td>
-                    </tr>
-                    <tr>
-                        <td><div class="item">Mathematics</div></td>
-                    </tr>
-                    <tr>
-                        <td><div class="item">Arts</div></td>
-                    </tr>
-                    <tr>
-                        <td><div class="item">Ethics</div></td>
+                        <td>总数：{$record_count}</td>
                     </tr>
                 </table>
             </div>
         </div>
 	<div data-options="region:'center',title:'机台安排',iconCls:'fa fa-save'">
             <div class="right">
-                <table class="table-strip">
+                <table class="table-borderd">
                     <tr>
-                        <td class="blank"></td>
+                        <td class="blank">机台</td>
                         <td class="title">优先</td>
                         <td class="title">一</td>
                         <td class="title">二</td>
                         <td class="title">三</td>
                         <td class="title">四</td>
                     </tr>
+                    {volist name='device_list' id='device'}
                     <tr>
-                        <td class="time">08:00</td>
+                        <td class="time">{$device.device_name}</td>
                         <td class="drop"></td>
                         <td class="drop"></td>
                         <td class="drop"></td>
                         <td class="drop"></td>
                         <td class="drop"></td>
                     </tr>
-                    <tr>
-                        <td class="time">09:00</td>
-                        <td class="drop"></td>
-                        <td class="drop"></td>
-                        <td class="drop"></td>
-                        <td class="drop"></td>
-                        <td class="drop"></td>
-                    </tr>
-                    <tr>
-                        <td class="time">10:00</td>
-                        <td class="drop"></td>
-                        <td class="drop"></td>
-                        <td class="drop"></td>
-                        <td class="drop"></td>
-                        <td class="drop"></td>
-                    </tr>
-                    <tr>
-                        <td class="time">11:00</td>
-                        <td class="drop"></td>
-                        <td class="drop"></td>
-                        <td class="drop"></td>
-                        <td class="drop"></td>
-                        <td class="drop"></td>
-                    </tr>
-                    <tr>
-                        <td class="time">12:00</td>
-                        <td class="drop"></td>
-                        <td class="drop"></td>
-                        <td class="drop"></td>
-                        <td class="drop"></td>
-                        <td class="drop"></td>
-                    </tr>
-
-                    <tr>
-                        <td class="time">14:00</td>
-                        <td class="drop"></td>
-                        <td class="drop"></td>
-                        <td class="drop"></td>
-                        <td class="drop"></td>
-                        <td class="drop"></td>
-                    </tr>
-                    <tr>
-                        <td class="time">15:00</td>
-                        <td class="drop"></td>
-                        <td class="drop"></td>
-                        <td class="drop"></td>
-                        <td class="drop"></td>
-                        <td class="drop"></td>
-                    </tr>
-                    <tr>
-                        <td class="time">16:00</td>
-                        <td class="drop"></td>
-                        <td class="drop"></td>
-                        <td class="drop"></td>
-                        <td class="drop"></td>
-                        <td class="drop"></td>
-                    </tr>
+                    {/volist}
                 </table>
             </div>
             
