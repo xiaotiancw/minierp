@@ -19,7 +19,7 @@ return [
         '__dir__'    => ['behavior', 'controller', 'model', 'view'],
         'controller' => [
             'Index', 'Login', 'User','Staff','Group', 'Auth', 'Log',
-            'Record','Alarm','Assign'
+            'Record','Alarm','Assign','RecordAssign'
             ],
         'model'      => ['User'],
         'view'       => [

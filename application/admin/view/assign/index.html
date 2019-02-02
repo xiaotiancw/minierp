@@ -1,35 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head id="Head1">
-        <meta charset="utf-8">
-        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-        <meta http-equiv="x-ua-compatible" content="ie=edge">
-
-        <title></title>
-
-        <!-- Meta -->
-
+<html>
+    <head>
+        <title>生产排单</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="__CSS__/reset.css" rel="stylesheet" type="text/css" />
         <link href="__EASYUI__/themes/default/easyui.css" rel="stylesheet" type="text/css" />
         <link href="__CSS__/font-awesome.min.css" rel="stylesheet" type="text/css" />
         <link href="__CSS__/layout.css" rel="stylesheet" type="text/css" />
-
-        <script type="text/javascript">
-            var ThinkPHP = {
-                'MODULE': '{:request()->module()}'
-            };
-        </script>
-        <style type="text/css">
-            .left{
-                width:120px;
-                float:left;
-            }
-            .left table{
-                background:#E0ECFF;
-            }
-            .left td{
-                background:#eee;
-            }
+        <style>
             .right{
                 float:left;
                 width:570px;
@@ -58,8 +37,8 @@
             }
             .item{
                 text-align:center;
-                border:1px solid #499B33;
-                background:#fafafa;
+                /*border:1px solid #499B33;
+                //background:#fafafa;*/
                 color:#444;
                 width:100px;
             }
@@ -69,61 +48,147 @@
             .trash{
                 background-color:red;
             }
-
         </style>
     </head>
     <body class="easyui-layout vui-easyui">
-        <div data-options="region:'west',split:true" title="需生产产品" style="width:30%;">
+        <div data-options="region:'west',split:true" title="需生产产品" style="width:50%;">
             <div class="left">
-                <table>
-                    {volist name='record_list' id='record'}
+                <div id='toolbar' style="padding: 5px;">
+                    <form id="formSearch" method="post">
+                    <div class="tool-search" style="padding:5px 0 0 0;">
+                        <label for="search_number" style="margin-left: 10px;">精密：</label>
+                        <input id="search_key1" name='search_key1'>
+                        <label for="search_number" style="margin-left: 10px;">性质：</label>
+                        <input id="search_key2" name='search_key2'>
+                        <label for="search_name" style="margin-left: 10px;">产品型号：</label>
+                        <input type="text" id="search_key3" class="easyui-textbox"><br/>
+                        <label for="search_startDate" style="margin-left: 10px;">交期：</label>
+                        <input type="text" id="search_startDate" name="search_startDate" class="easyui-datebox" data-options="editable:false">
+                        <label for="search_endDate">-</label>
+                        <input type="text" id="search_endDate" name="search_endDate" class="easyui-datebox" data-options="editable:false">
+                        <a href="javascript:void(0)" class="easyui-linkbutton" data-options='iconCls:"fa fa-search"' id="search">查询</a>
+                        <a href="javascript:void(0)" class="easyui-linkbutton" data-options='iconCls:""' id="resetButton">重置</a>
+                    </div>
+                    </form>
+                </div>
+                <table class="table table-hover table-bordered table-striped">
+                    <thead>
+                        <tr>
+                          <th>产品型号</th>
+                          <th>性质</th>
+                          <th>数量</th>
+                          <th>机台</th>
+                          <th>精密</th>
+                          <th>交期</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {volist name='list' id='record'}
                     <tr>
-                        <td><div class="item" title="({$record.sale_type}/{$record.num}m/{$record.deviceid})">{$record.productid}</div></td>
+                        <td style="background-color: {$record.scid};">
+                            <div id="id_{$record.id}" class="item" data="{$record.id}" device="{$record.deviceid}" title="({$record.sale_type}/{$record.num}m/{$record.deviceid})">
+                                <p >{$record.productid}</p>
+                            </div>
+                        </td>
+                        <td>{$record.sale_type}</td>
+                        <td>{$record.num}</td>
+                        <td>{$record.deviceid}</td>
+                        <td>{$record.device_type|default=''}</td>
+                        <td>
+                            <p style="color: {$record.color|default='black'};">{$record.deadline}</p>
+                        </td>
                     </tr>
                     {/volist}
-                    <tr>
-                        <td>总数：{$record_count}</td>
-                    </tr>
+                    </tbody>
                 </table>
             </div>
+            {$page|raw}
         </div>
-	<div data-options="region:'center',title:'机台安排',iconCls:'fa fa-save'">
+        
+        <div data-options="region:'center',title:'机台安排',iconCls:'fa fa-save'">
             <div class="right">
                 <table class="table-borderd">
                     <tr>
-                        <td class="blank">机台</td>
-                        <td class="title">优先</td>
+                        <td class="blank"  width="100">机台号</td>
+                        <td class="blank" width="120">精密</td>
                         <td class="title">一</td>
                         <td class="title">二</td>
                         <td class="title">三</td>
                         <td class="title">四</td>
+                        <td class="title">五</td>
                     </tr>
                     {volist name='device_list' id='device'}
                     <tr>
-                        <td class="time">{$device.device_name}</td>
-                        <td class="drop"></td>
-                        <td class="drop"></td>
-                        <td class="drop"></td>
-                        <td class="drop"></td>
-                        <td class="drop"></td>
+                        <td class="time1">{$device.device_name}</td>
+                        <td class="time2">{$device.device_type}</td>
+                        <td class="drop time3" seq='1'>{$device.A1|default=''|raw}</td>
+                        <td class="drop time3" seq='2'>{$device.A2|default=''|raw}</td>
+                        <td class="drop time3" seq='3'>{$device.A3|default=''|raw}</td>
+                        <td class="drop time3" seq='4'>{$device.A4|default=''|raw}</td>
+                        <td class="drop time3" seq='5'>{$device.A5|default=''|raw}</td>
                     </tr>
                     {/volist}
                 </table>
             </div>
-            
         </div>
-
-
-
+        
         <script src="__EASYUI__/jquery.min.js" type="text/javascript"></script>
         <script src="__EASYUI__/jquery.easyui.min.js" type="text/javascript"></script>
-
+        <script src="__EASYUI__/locale/easyui-lang-zh_CN.js" type="text/javascript"></script>
+        
+        <script type="text/javascript" src="__JS__/layer/layer.js"></script>
+        <script type="text/javascript" src="__JS__/common.js"></script>
         <script type="text/javascript">
+            var device_type_url = '{:url("/admin/assign/device_type")}';
+            var assign_index_url = '{:url("/admin/assign/index")}';
+            
+            /**
+            * 提交表单
+            * return
+            */
+            $('#search').click(function () {
+    //            var search_key1 = $('#search_key1').combobox('getValue');
+    //            var search_key2 = $('#search_key2').combobox('getValue');
+    //            var search_key2 = $('#search_key3').textbox('getValue');
+    //            var startDate = $('#search_startDate').textbox('getValue');
+    //            var endDate = $('#search_endDate').textbox('getValue');
+                $("#formSearch").attr("action", assign_index_url);
+                $("#formSearch").submit();
+            });
+            
+            $('#resetButton').click(function () {
+                $("#formSearch").form('clear');
+                $("#formSearch").submit();
+            });
+    
             $(function () {
-                $('.left .item').draggable({
+                $('#search_key1').combobox({
+                    url : device_type_url,
+                    valueField:'device_type',
+                    textField:'device_type',
+                    editable : false,
+                    panelHeight:'auto',
+                    width : '100px'
+                    //panelWidth:'auto'
+                });
+                
+                $('#search_key2').combobox({
+                    data : erp.SaleType,
+                    valueField:'value',
+                    textField:'text',
+                    editable : false,
+                    width : '100px',
+                    panelHeight:'auto'
+                });
+                
+
+                
+                
+                $('.item').draggable({
                     revert: true,
                     proxy: 'clone'
                 });
+                
                 $('.right td.drop').droppable({
                     onDragEnter: function () {
                         $(this).addClass('over');
@@ -134,29 +199,66 @@
                     onDrop: function (e, source) {
                         $(this).removeClass('over');
                         if ($(source).hasClass('assigned')) {
-                            $(this).append(source);
+                            //$(this).append(source);
+                            //console.log($(source).attr('data'));
+                            //update()
                         } else {
-                            var c = $(source).clone().addClass('assigned');
-                            $(this).empty().append(c);
-                            c.draggable({
-                                revert: true
-                            });
+//                            var c = $(source).clone().addClass('assigned');
+//                            $(this).empty().append(c);
+//                            c.draggable({
+//                                revert: true
+//                            });
+                            //console.log($(source).attr('device'));
+                            //console.log($(this).parent().children('.time2').html());
+                            var id = $(source).attr('data');
+                            var device = $(this).parent().children('.time1').html();
+                            var device_type = $(this).parent().children('.time2').html();
+                            var seq = $(this).attr('seq');
+                            console.log(seq);
+                            //操作数据库
+                            //var result = update(id,device,device_type,$(this),$(source));
+                            var result = update(id,device,device_type,seq);
+                            if(result){
+                                var c = $(source).clone().addClass('assigned');
+                                $(this).empty().append(c);
+                                c.draggable({
+                                    revert: true
+                                });
+                                window.location.reload();//刷新当前页面. 
+                            }
                         }
                     }
                 });
-                $('.left').droppable({
-                    accept: '.assigned',
-                    onDragEnter: function (e, source) {
-                        $(source).addClass('trash');
-                    },
-                    onDragLeave: function (e, source) {
-                        $(source).removeClass('trash');
-                    },
-                    onDrop: function (e, source) {
-                        $(source).remove();
-                    }
-                });
+                
+                
+                function update(id,device,device_type,seq){
+                    $.messager.progress();
+                    var res = false;
+                    $.ajax({
+                        type: 'POST',
+                        url: "{:url('/admin/record_assign/update')}",
+                        async :false, 
+                        data: {
+                            id:id,
+                            device:device,
+                            device_type:device_type,
+                            seq:seq
+                        },
+                        success: function(result){
+                            $.messager.progress('close');
+                            layer.msg(result.Message);
+                            if(result.Success){
+                                console.log(result);
+                                res = true;
+                            }
+                        },
+                    });
+                    return res;
+                }
+                
             });
+            
+            
         </script>
     </body>
 </html>

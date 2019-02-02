@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head id="Head1">
+        <meta charset="utf-8">
+        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+        <title>生产排单</title>
+
+        <!-- Meta -->
+
+        <link href="__CSS__/reset.css" rel="stylesheet" type="text/css" />
+        <link href="__EASYUI__/themes/default/easyui.css" rel="stylesheet" type="text/css" />
+        <link href="__CSS__/font-awesome.min.css" rel="stylesheet" type="text/css" />
+        <link href="__CSS__/layout.css" rel="stylesheet" type="text/css" />
+
+        <script type="text/javascript">
+            var ThinkPHP = {
+                'MODULE': '{:request()->module()}'
+            };
+        </script>
+        <style type="text/css">
+            .left{
+                width:120px;
+                float:left;
+            }
+            .left table{
+                background:#E0ECFF;
+            }
+            .left td{
+                background:#eee;
+            }
+            .right{
+                float:left;
+                width:570px;
+            }
+            .right table{
+                background:#E0ECFF;
+                width:100%;
+                border: 1px solid;
+            }
+            .right td{
+                background:#fafafa;
+                color:#444;
+                text-align:center;
+                padding:2px;
+                border: 1px solid;
+            }
+            .right td{
+                background:#E0ECFF;
+            }
+            .right td.drop{
+                background:#fafafa;
+                width:100px;
+            }
+            .right td.over{
+                background:#FBEC88;
+            }
+            .item{
+                text-align:center;
+                border:1px solid #499B33;
+                background:#fafafa;
+                color:#444;
+                width:100px;
+            }
+            .assigned{
+                border:1px solid #BC2A4D;
+            }
+            .trash{
+                background-color:red;
+            }
+
+        </style>
+    </head>
+    <body class="easyui-layout vui-easyui">
+        <div data-options="region:'west',split:true" title="需生产产品" style="width:50%;">
+            <div id='toolbar' style="padding: 5px;">
+                <div class="tool-search" style="padding:5px 0 0 0;">
+                    <label for="search_number" style="margin-left: 10px;">精密：</label>
+                    <select id="search_key1" class="easyui-combobox">
+                        <option>11</option>
+                    </select>
+                    <label for="search_number" style="margin-left: 10px;">性质：</label>
+                    <select id="search_key1" class="easyui-combobox">
+                        <option>11</option>
+                    </select>
+                    <label for="search_name">产品型号：</label>
+                    <input type="text" id="search_key2" class="easyui-textbox"><br/>
+                    <label for="search_startDate" style="margin-left: 10px;">交期：</label>
+                    <input type="text" id="search_startDate" class="easyui-datebox" data-options="editable:false">
+                    <label for="search_endDate">-</label>
+                    <input type="text" id="search_endDate" class="easyui-datebox" data-options="editable:false">
+                    <a href="javascript:void(0)" class="easyui-linkbutton" data-options='iconCls:"fa fa-search"' id="search">查询</a>
+                </div>
+            </div>
+                <table id="dataGrid" data-options="border:false"></table>
+        </div>
+        
+        
+	<div data-options="region:'center',title:'机台安排',iconCls:'fa fa-save'">
+            <div class="right">
+                <table class="table-borderd">
+                    <tr>
+                        <td class="blank">机台</td>
+                        <td class="title">优先</td>
+                        <td class="title">一</td>
+                        <td class="title">二</td>
+                        <td class="title">三</td>
+                        <td class="title">四</td>
+                    </tr>
+                    {volist name='device_list' id='device'}
+                    <tr>
+                        <td class="time">{$device.device_name}</td>
+                        <td class="drop"></td>
+                        <td class="drop"></td>
+                        <td class="drop"></td>
+                        <td class="drop"></td>
+                        <td class="drop"></td>
+                    </tr>
+                    {/volist}
+                </table>
+            </div>
+            
+        </div>
+
+
+
+        <script src="__EASYUI__/jquery.min.js" type="text/javascript"></script>
+        <script src="__EASYUI__/jquery.easyui.min.js" type="text/javascript"></script>
+
+        <script type="text/javascript">
+            var cardview = $.extend({}, $.fn.datagrid.defaults.view, {  
+                renderRow: function(target, fields, frozen, rowIndex, rowData){  
+                    var cc = [];  
+                    cc.push('<td colspan=' + fields.length + ' style="padding:5px;border:0;">');  
+                    if (!frozen){  
+                        //cc.push('<img src="images/' + rowData.itemid + '.png" style="height:150px;float:left">');  
+                        cc.push('<div clsss="item" style="float:left">');  
+//                        for(var i=0; i<fields.length; i++){  
+//                            cc.push('<p>' + fields[i] + ': ' + rowData[fields[i]] + '</p>');  
+//                        }  
+                        cc.push(rowData['productid'] + '</div>');  
+                    }  
+                    cc.push('</td>');  
+                    return cc.join('');  
+                }  
+            });  
+            
+                var datagrid_url =  '{:url("/admin/assign/data_grid")}';
+                var dataGrid;
+                var dlg = '';
+            $(function () {
+                    dataGrid = $('#dataGrid').datagrid({
+                        url: datagrid_url,
+                        toolbar: '#toolbar',
+                        //fitColumns: true,
+                        fit: true,
+                        //height:$(document).height()-85,
+                        //width:$(document).width(),
+                        sortName: 'id',
+                        sortOrder: 'desc',
+                        idField: 'id',
+                        pageSize: 30,
+                        pageList: [10, 20, 30, 40, 50],
+                        pagination: true,
+                        striped: true, //奇偶行是否区分
+                        //singleSelect: true,//单选模式
+                        rownumbers: true, //行号
+                        columns: [[
+                                {field : 'id',title : '自动编号',width : 100,checkbox : true},
+                                {field: 'recordid', title: '记录号', width: 100, sortable: true},
+                                {field: 'sale_type', title: '销售性质', width: 100},
+                                {field: 'productid', title: '产品型号', width: 100,
+                                    styler: function(value,row,index){
+                                        if (row.assign_treatstate === '已处理'){
+                                            //return 'background-color:#ffee00;color:red;';
+                                            // the function can return predefined css class and inline style
+                                            return {class:'c1',style:'background-color:red'}
+                                        }else{
+                                            return {class:'item',style:'background-color:gray'}
+                                        }
+                                    }
+                                },
+                                {field: 'num', title: '数量', width: 80},
+                                {field: 'deviceid', title: '机台号', width: 80},
+                                {field: 'deadline', title: '交期', width: 100,sortable: true,
+                                    formatter: function (value, row,index){
+                                        var oDate1 = new Date();
+                                        var oDate2 = new Date(row.deadline);
+                                        if(oDate1.getTime() >= oDate2.getTime()){
+                                            return '<span style="color:red;">('+value+')</span>';
+                                        }else{
+                                            return value;
+                                        }
+                                    }
+                                },
+                            ]],
+                        view: cardview
+                    });
+
+                    //刷新dataGrid
+                    $('#btnReload').click(function () {
+                        dataGrid.datagrid('reload');
+                    });
+
+                    $('#search').click(function () {
+                        var number = $('#search_number').textbox('getValue');
+                        var name = $('#search_name').textbox('getValue');
+                        var startDate = $('#search_startDate').textbox('getValue');
+                        var endDate = $('#search_endDate').textbox('getValue');
+                        dataGrid.datagrid({
+                            queryParams: {
+                                number : number,
+                                name: name,
+                                endDate: endDate,
+                                startDate: startDate
+                            }
+                        });
+                    });
+                
+                $('#lef .item').draggable({
+                    revert: true,
+                    proxy: 'clone'
+                });
+                $('.right td.drop').droppable({
+                    onDragEnter: function () {
+                        $(this).addClass('over');
+                    },
+                    onDragLeave: function () {
+                        $(this).removeClass('over');
+                    },
+                    onDrop: function (e, source) {
+                        $(this).removeClass('over');
+                        if ($(source).hasClass('assigned')) {
+                            $(this).append(source);
+                        } else {
+                            var c = $(source).clone().addClass('assigned');
+                            $(this).empty().append(c);
+                            c.draggable({
+                                revert: true
+                            });
+                        }
+                    }
+                });
+                $('.left').droppable({
+                    accept: '.assigned',
+                    onDragEnter: function (e, source) {
+                        $(source).addClass('trash');
+                    },
+                    onDragLeave: function (e, source) {
+                        $(source).removeClass('trash');
+                    },
+                    onDrop: function (e, source) {
+                        $(source).remove();
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>

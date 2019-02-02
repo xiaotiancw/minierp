@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head id="Head1">
+        <meta charset="utf-8">
+        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>生产排单</title>
+        <link href="__CSS__/reset.css" rel="stylesheet" type="text/css" />
+        <link href="__EASYUI__/themes/default/easyui.css" rel="stylesheet" type="text/css" />
+        <link href="__CSS__/font-awesome.min.css" rel="stylesheet" type="text/css" />
+        <link href="__CSS__/layout.css" rel="stylesheet" type="text/css" />
+        <style type="text/css">
+            .left{
+                width:120px;
+                float:left;
+            }
+            .left table{
+                background:#E0ECFF;
+            }
+            .left td{
+                background:#eee;
+            }
+            .right{
+                float:left;
+                width:570px;
+            }
+            .right table{
+                background:#E0ECFF;
+                width:100%;
+                border: 1px solid;
+            }
+            .right td{
+                background:#fafafa;
+                color:#444;
+                text-align:center;
+                padding:2px;
+                border: 1px solid;
+            }
+            .right td{
+                background:#E0ECFF;
+            }
+            .right td.drop{
+                background:#fafafa;
+                width:100px;
+            }
+            .right td.over{
+                background:#FBEC88;
+            }
+            .item{
+                text-align:center;
+                border:1px solid #499B33;
+                background:#fafafa;
+                color:#444;
+                width:100px;
+            }
+            .assigned{
+                border:1px solid #BC2A4D;
+            }
+            .trash{
+                background-color:red;
+            }
+
+        </style>
+    </head>
+    <body class="easyui-layout vui-easyui">
+        <div data-options="region:'west',split:true" title="需生产产品" style="width:50%;">
+            <div id='toolbar' style="padding: 5px;">
+                <div class="tool-search" style="padding:5px 0 0 0;">
+                    <label for="search_number" style="margin-left: 10px;">精密：</label>
+                    <select id="search_key1" class="easyui-combobox">
+                        <option>11</option>
+                    </select>
+                    <label for="search_number" style="margin-left: 10px;">性质：</label>
+                    <select id="search_key1" class="easyui-combobox">
+                        <option>11</option>
+                    </select>
+                    <label for="search_name" style="margin-left: 10px;">产品型号：</label>
+                    <input type="text" id="search_key2" class="easyui-textbox"><br/>
+                    <label for="search_startDate" style="margin-left: 10px;">交期：</label>
+                    <input type="text" id="search_startDate" class="easyui-datebox" data-options="editable:false">
+                    <label for="search_endDate">-</label>
+                    <input type="text" id="search_endDate" class="easyui-datebox" data-options="editable:false">
+                    <a href="javascript:void(0)" class="easyui-linkbutton" data-options='iconCls:"fa fa-search"' id="search">查询</a>
+                </div>
+            </div>
+            <div class="left">
+                <table>
+                    {volist name='record_list' id='record'}
+                    <tr>
+                        <td><div id="id_{$record.id}" class="item" title="({$record.sale_type}/{$record.num}m/{$record.deviceid})">{$record.productid}</div></td>
+                        <td>{$record.sale_type}</td>
+                    </tr>
+                    {/volist}
+                    <tr>
+                        <td>总数：{$record_count}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+	<div data-options="region:'center',title:'机台安排',iconCls:'fa fa-save'">
+            <div class="right">
+                <table class="table-borderd">
+                    <tr>
+                        <td class="blank">机台号</td>
+                        <td class="title">一</td>
+                        <td class="title">二</td>
+                        <td class="title">三</td>
+                        <td class="title">四</td>
+                        <td class="title">五</td>
+                    </tr>
+                    {volist name='device_list' id='device'}
+                    <tr>
+                        <td class="time">{$device.device_name}</td>
+                        <td class="drop"></td>
+                        <td class="drop"></td>
+                        <td class="drop"></td>
+                        <td class="drop"></td>
+                        <td class="drop"></td>
+                    </tr>
+                    {/volist}
+                </table>
+            </div>
+            
+        </div>
+
+
+
+        <script src="__EASYUI__/jquery.min.js" type="text/javascript"></script>
+        <script src="__EASYUI__/jquery.easyui.min.js" type="text/javascript"></script>
+
+        <script type="text/javascript">
+            $(function () {
+                $('.left .item').draggable({
+                    revert: true,
+                    proxy: 'clone'
+                });
+                $('.right td.drop').droppable({
+                    onDragEnter: function () {
+                        $(this).addClass('over');
+                    },
+                    onDragLeave: function () {
+                        $(this).removeClass('over');
+                    },
+                    onDrop: function (e, source) {
+                        $(this).removeClass('over');
+                        if ($(source).hasClass('assigned')) {
+                            $(this).append(source);
+                        } else {
+                            var c = $(source).clone().addClass('assigned');
+                            $(this).empty().append(c);
+                            c.draggable({
+                                revert: true
+                            });
+                        }
+                    }
+                });
+                $('.left').droppable({
+                    accept: '.assigned',
+                    onDragEnter: function (e, source) {
+                        $(source).addClass('trash');
+                    },
+                    onDragLeave: function (e, source) {
+                        $(source).removeClass('trash');
+                    },
+                    onDrop: function (e, source) {
+                        $(source).remove();
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>

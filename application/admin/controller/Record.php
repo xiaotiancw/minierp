@@ -274,7 +274,7 @@ class Record extends \app\common\controller\BaseController
     public function end() {
         if($this->request->isPost()){
             $data = input('post.');
-            $record = db('record')->find($data['id']);
+            $record = Db::name('record')->find($data['id']);
             if($record && empty($record['lean_treatstate'])){
                 return ['Success'=>false,'Message'=>'请先领料处理！'];
             }
@@ -284,7 +284,25 @@ class Record extends \app\common\controller\BaseController
             $data['end_treattime'] = get_time();
             $data['end_treatstate'] = "已处理";
             $data['lean_returntime'] = get_time();
-            $result = db('record')->update($data);
+            
+            Db::startTrans();
+            try {
+                $result = Db::name('record')->update($data);
+                //更新record_assign排单表
+                Db::name('record_assign')->where('recordid',$record['recordid'])
+                        ->update(['assign_state'=>'已处理']);
+                // 提交事务
+                Db::commit();
+            } catch (\Exception $e) {
+                // 回滚事务
+                Db::rollback();
+            }
+            
+//            $result = Db::name('record')->update($data);
+//            
+//            //更新record_assign排单表
+//            Db::name('record_assign')->where('recordid',$record['recordid'])->update(['assign_state'=>'已处理']);
+            
             if($result){
                 return ['Success'=>true,'Message'=>'更新成功！'];
             }else{

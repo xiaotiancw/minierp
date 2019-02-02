@@ -7,13 +7,13 @@ var erp = erp || {};
 erp.data = erp.data || {};// 用于存放临时的数据或者对象
 
 erp.TrueFalseData = [
-    { "value": "1", "text": "是" },
-    { "value": "0", "text": "否" }
+    {"value": "1", "text": "是"},
+    {"value": "0", "text": "否"}
 ];
 
 erp.StateData = [
-    { "value": "正常", "text": "正常" },
-    { "value": "冻结", "text": "冻结" }
+    {"value": "正常", "text": "正常"},
+    {"value": "冻结", "text": "冻结"}
 ];
 
 erp.GenderData = [
@@ -22,9 +22,9 @@ erp.GenderData = [
 ];
 
 erp.WorkerTypeData = [
-    {id: '正式员工', text: '正式员工'}, 
-    {id: '合同工',text: '合同工'}, 
-    {id: '临时工',text: '临时工'}
+    {id: '正式员工', text: '正式员工'},
+    {id: '合同工', text: '合同工'},
+    {id: '临时工', text: '临时工'}
 ];
 erp.MaritalData = [
     {
@@ -74,23 +74,36 @@ erp.EntryData = [
     }];
 //政治面貌
 erp.PoliticsData = [{
-                id : '群众',
-                text : '群众'
-            },{
-                id : '团员',
-                text : '团员'
-            },{
-                id : '党员',
-                text : '党员'
-            }];
-        
-        erp.RegisteredData = [{
-                id : '本地城市户口',
-                text : '本地城市户口'
-            },{
-                id : '本地农村户口',
-                text : '本地农村户口'
-            },{
-                id : '外地户口',
-                text : '外地户口'
-            }];
+        id: '群众',
+        text: '群众'
+    }, {
+        id: '团员',
+        text: '团员'
+    }, {
+        id: '党员',
+        text: '党员'
+    }];
+
+erp.RegisteredData = [{
+        id: '本地城市户口',
+        text: '本地城市户口'
+    }, {
+        id: '本地农村户口',
+        text: '本地农村户口'
+    }, {
+        id: '外地户口',
+        text: '外地户口'
+    }];
+
+erp.PersonData = [
+    {"value": "黄桂琴", "text": "黄桂琴"},
+    {"value": "黄强", "text": "黄强"},
+    {"value": "郭红娣", "text": "郭红娣"},
+    {"value": "于大寿", "text": "于大寿"},
+    {"value": "苟晓东", "text": "苟晓东"},
+];
+erp.SaleType = [
+    {"value": "内销", "text": "内销"},
+    {"value": "备库", "text": "备库"},
+    {"value": "新样", "text": "新样"},
+];
