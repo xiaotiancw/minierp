@@ -33,6 +33,7 @@ return [
             /*生产记录 */
             'record/index','record/create','record/edit',
             'record/expired',//已过交期列表
+            'record/finished',//已过交期列表
             'record/sha',//纱线处理
             'record/mtr',//备料处理
             'record/assign',//生产排单处理

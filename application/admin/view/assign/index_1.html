@@ -51,7 +51,7 @@
         </style>
     </head>
     <body class="easyui-layout vui-easyui">
-        <div data-options="region:'west',split:true" title="需生产产品" style="width:45%;">
+        <div data-options="region:'west',split:true" title="需生产产品" style="width:50%;">
             <div class="left">
                 <div id='toolbar' style="padding: 5px;">
                     <form id="formSearch" method="post">
@@ -61,14 +61,12 @@
                         <label for="search_number" style="margin-left: 10px;">性质：</label>
                         <input id="search_key2" name='search_key2'>
                         <label for="search_name" style="margin-left: 10px;">产品型号：</label>
-                        <input type="text" id="search_key3" name='search_key3' class="easyui-textbox"><br/>
-                        <!--
+                        <input type="text" id="search_key3" class="easyui-textbox"><br/>
                         <label for="search_startDate" style="margin-left: 10px;">交期：</label>
                         <input type="text" id="search_startDate" name="search_startDate" class="easyui-datebox" data-options="editable:false">
                         <label for="search_endDate">-</label>
                         <input type="text" id="search_endDate" name="search_endDate" class="easyui-datebox" data-options="editable:false">
-                        -->
-                        <a href="javascript:void(0)" style="margin-left: 10px;" class="easyui-linkbutton" data-options='iconCls:"fa fa-search"' id="search">查询</a>
+                        <a href="javascript:void(0)" class="easyui-linkbutton" data-options='iconCls:"fa fa-search"' id="search">查询</a>
                         <a href="javascript:void(0)" class="easyui-linkbutton" data-options='iconCls:""' id="resetButton">重置</a>
                     </div>
                     </form>
@@ -77,7 +75,6 @@
                     <thead>
                         <tr>
                           <th>产品型号</th>
-                          <th>是否排单</th>
                           <th>性质</th>
                           <th>数量</th>
                           <th>机台</th>
@@ -89,11 +86,10 @@
                     {volist name='list' id='record'}
                     <tr>
                         <td style="background-color: {$record.scid};">
-                            <div id="id_{$record.id}" class="item" data="{$record.recordid}" device="{$record.deviceid}" title="({$record.sale_type}/{$record.num}m/{$record.deviceid})">
+                            <div id="id_{$record.id}" class="item" data="{$record.id}" device="{$record.deviceid}" title="({$record.sale_type}/{$record.num}m/{$record.deviceid})">
                                 <p >{$record.productid}</p>
                             </div>
                         </td>
-                        <td>{$record.assigned}</td>
                         <td>{$record.sale_type}</td>
                         <td>{$record.num}</td>
                         <td>{$record.deviceid}</td>
@@ -111,15 +107,15 @@
         
         <div data-options="region:'center',title:'机台安排',iconCls:'fa fa-save'">
             <div class="right">
-                <table class="table-borderd table-fixed">
+                <table class="table-borderd">
                     <tr>
-                        <td class="blank"  width="80">机台号</td>
-                        <td class="blank" width="100">精密</td>
-                        <td class="title" width="100">一</td>
-                        <td class="title" width="100">二</td>
-                        <td class="title" width="100">三</td>
-                        <td class="title" width="100">四</td>
-                        <td class="title" width="100">五</td>
+                        <td class="blank"  width="100">机台号</td>
+                        <td class="blank" width="120">精密</td>
+                        <td class="title">一</td>
+                        <td class="title">二</td>
+                        <td class="title">三</td>
+                        <td class="title">四</td>
+                        <td class="title">五</td>
                     </tr>
                     {volist name='device_list' id='device'}
                     <tr>
@@ -196,32 +192,41 @@
                 $('.right td.drop').droppable({
                     onDragEnter: function () {
                         $(this).addClass('over');
-                        console.log('enter');
                     },
                     onDragLeave: function () {
                         $(this).removeClass('over');
-                        console.log('leave');
                     },
                     onDrop: function (e, source) {
-                        var id = $(source).attr('data');//recordid
-                        var device = $(this).parent().children('.time1').html();
-                        var device_type = $(this).parent().children('.time2').html();
-                        var seq = $(this).attr('seq');
-                        //判断是否已经排单
-                        //var re = checkAssign(id);
-                        //落下drop
                         $(this).removeClass('over');
-                        //操作数据库
-                        var result = update(id,device,device_type,seq);
-                        if(result){
-                            var c = $(source).clone().addClass('assigned');
-                            $(this).empty().append(c);
-                            c.draggable({
-                                revert: true
-                            });
-                            window.location.reload();//刷新当前页面. 
+                        if ($(source).hasClass('assigned')) {
+                            //$(this).append(source);
+                            //console.log($(source).attr('data'));
+                            //update()
+                        } else {
+//                            var c = $(source).clone().addClass('assigned');
+//                            $(this).empty().append(c);
+//                            c.draggable({
+//                                revert: true
+//                            });
+                            //console.log($(source).attr('device'));
+                            //console.log($(this).parent().children('.time2').html());
+                            var id = $(source).attr('data');
+                            var device = $(this).parent().children('.time1').html();
+                            var device_type = $(this).parent().children('.time2').html();
+                            var seq = $(this).attr('seq');
+                            console.log(seq);
+                            //操作数据库
+                            //var result = update(id,device,device_type,$(this),$(source));
+                            var result = update(id,device,device_type,seq);
+                            if(result){
+                                var c = $(source).clone().addClass('assigned');
+                                $(this).empty().append(c);
+                                c.draggable({
+                                    revert: true
+                                });
+                                window.location.reload();//刷新当前页面. 
+                            }
                         }
-                        
                     }
                 });
                 
@@ -243,35 +248,13 @@
                             $.messager.progress('close');
                             layer.msg(result.Message);
                             if(result.Success){
-                                //console.log(result);
+                                console.log(result);
                                 res = true;
                             }
                         },
                     });
                     return res;
                 }
-                
-//                function checkAssign(id){
-//                    $.messager.progress();
-//                    var res = false;
-//                    $.ajax({
-//                        type: 'POST',
-//                        url: "{:url('/admin/record_assign/check_assign')}",
-//                        async :false, 
-//                        data: {
-//                            id:id
-//                        },
-//                        success: function(result){
-//                            $.messager.progress('close');
-//                            //layer.msg(result.Message);
-//                            if(result.Success){
-//                                //已经排单
-//                                res = true;
-//                            }
-//                        },
-//                    });
-//                    return res;
-//                }
                 
             });
             

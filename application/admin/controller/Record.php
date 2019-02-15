@@ -492,4 +492,42 @@ class Record extends \app\common\controller\BaseController
         $writer->save('php://output');
     }
 
+    /**
+     * 已经完成记录
+     */
+    public function finished() {
+        return view();
+    }
+    
+    public function datagrid_finished($page = 1, $rows = 20, $sort = 'id', $order = 'desc') {
+        if ($this->request->isAjax()) {
+            $recordId = input('recordid','');//产品型号
+            $deadline = input('deadline','');
+            $startDate = input('startDate','');
+            $endDate = input('endDate','');
+            $where = [];
+            if($recordId){
+                $where1 = [['productid', 'like', "%$recordId%"]];
+                $where = array_merge($where,$where1);
+            }
+            if($deadline){
+                $where2 = [['deadline', 'between time', [$deadline,$deadline]]];
+                $where = array_merge($where,$where2);
+            }
+            if($startDate && $endDate){
+                $where3 = [['deadline', 'between time', [$startDate, $endDate]]];
+                $where = array_merge($where,$where3);
+            }
+            $where4 = [
+                //['deadline', '<= time', get_date()],
+                //['sale_type','=','内销'],
+                ['end_treatstate','=','已处理'],
+                ['delete_time','exp',Db::raw('is null')]
+                ];
+            $where = array_merge($where,$where4);
+            $count = db('record')->where($where)->count();
+            $list = db('record')->where($where)->order([$sort => $order])->limit($rows)->page($page)->select();
+            return ['total' => $count, 'rows' => $list ? $list : ''];
+        }
+    }
 }

@@ -1,10 +1,36 @@
 <?php
 namespace app\home\controller;
+use think\Db;
+class Index extends \think\Controller {
 
-class Index
-{
-    public function index()
-    {
-        return '<style type="text/css">*{ padding: 0; margin: 0; } div{ padding: 4px 48px;} a{color:#2E5CD5;cursor: pointer;text-decoration: none} a:hover{text-decoration:underline; } body{ background: #fff; font-family: "Century Gothic","Microsoft yahei"; color: #333;font-size:18px;} h1{ font-size: 100px; font-weight: normal; margin-bottom: 12px; } p{ line-height: 1.6em; font-size: 42px }</style><div style="padding: 24px 48px;"> <h1>:) </h1><p> home模块 ThinkPHP V5.1<br/><span style="font-size:30px">12载初心不改（2006-2018） - 你值得信赖的PHP框架</span></p></div><script type="text/javascript" src="https://tajs.qq.com/stats?sId=64890268" charset="UTF-8"></script><script type="text/javascript" src="https://e.topthink.com/Public/static/client.js"></script><think id="eab4b9f840753f8e7"></think>';
+    public function index() {
+        return view();
     }
+
+    public function data_grid($page = 1, $rows = 20, $sort = 'id', $order = 'desc') {
+        if ($this->request->isAjax()) {
+            $recordId = input('recordid', ''); //产品型号
+            $deadline = input('deadline', '');
+            $startDate = input('startDate', '');
+            $endDate = input('endDate', '');
+            $where = [];
+            if ($recordId) {
+                $where1 = [['productid', 'like', "%$recordId%"]];
+                $where = array_merge($where, $where1);
+            }
+            if ($deadline) {
+                $where2 = [['deadline', 'between time', [$deadline, $deadline]]];
+                $where = array_merge($where, $where2);
+            }
+            if ($startDate && $endDate) {
+                $where3 = [['deadline', 'between time', [$startDate, $endDate]]];
+                $where = array_merge($where, $where3);
+            }
+            $count = Db::name('record')->where($where)->whereNull('delete_time')->count();
+            $list = Db::name('record')->where($where)->whereNull('delete_time')->order([$sort => $order])->limit($rows)->page($page)->select();
+            return ['total' => $count, 'rows' => $list ? $list : ''];
+        }
+    }
+
 }
+

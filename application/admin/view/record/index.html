@@ -3,7 +3,16 @@
 {block name="main"}
 <div id='toolbar' style="padding: 5px;">
     <div class="btnbar-tools">
+        <?php
+            use util\Auth;
+            $auth = new Auth(); 
+        ?>
+        <?php if($auth->check('record/index',session('user')['id']))
+        { ?>
         <a href="javascript:;" class="add" id="newData"><i class="fa fa-plus-square success"></i>添加</a>
+        <?php
+        }
+        ?>
         <a href="javascript:;" class="edit"><i class="fa fa-pencil-square info"></i>编辑</a>
         <a href="javascript:;" class="del"><i class="fa fa-times-rectangle danger"></i>删除</a>
         <!--                <a href="javascript:;" class="count"><i class="fa fa-pie-chart purple"></i>统计</a>-->
@@ -16,15 +25,15 @@
 
     </div>
     <div class="tool-search" style="padding:5px 0 0 0;">
-        <label for="order-search-keywords" style="margin-left: 10px;">用户名：</label>
-        <input type="text" id="order-search-keywords" class="easyui-textbox">
-        <label for="order-search-keywords">姓名：</label>
-        <input type="text" id="order-search-date-type" class="easyui-textbox">
-        <label for="order-search-keywords">时间区间：</label>
-        <input type="text" id="order-search-date-from" class="easyui-datebox">
-        <label for="order-search-date-to">-</label>
-        <input type="text" id="order-search-date-to" class="easyui-datebox">
-        <a href="javascript:void(0)" class="easyui-linkbutton" data-options='iconCls:"fa fa-search"' onclick="orderOpt.search()">查询</a>
+            <label for="order-search-keywords" style="margin-left: 10px;">产品型号：</label>
+            <input type="text" id="search_recordid" class="easyui-textbox">
+            <label for="order-search-keywords">交期：</label>
+            <input type="text" id="search_deadline" class="easyui-datebox" data-options="editable:false">
+            <label for="order-search-keywords">交期区间：</label>
+            <input type="text" id="search_startDate" class="easyui-datebox" data-options="editable:false">
+            <label for="order-search-date-to">-</label>
+            <input type="text" id="search_endDate" class="easyui-datebox" data-options="editable:false">
+            <a id="search" href="javascript:void(0)" class="easyui-linkbutton" data-options='iconCls:"fa fa-search"' onclick="orderOpt.search()">查询</a>
     </div>
 </div>
 <table id="dataGrid" data-options="border:false"></table>
@@ -77,12 +86,12 @@
             rownumbers: true, //行号
             frozenColumns:[[
                 {field: 'id', title: '编号', checkbox: true },
-                {field: 'details', title: '详细', width: 50,
-                        formatter: function (value, row,index){
-                            //return row.id;
-                            return '<a href="javascript:void(0)" class="easyui-linkbutton" >详细</a>';
-                        }
-                    },
+//                {field: 'details', title: '详细', width: 50,
+//                        formatter: function (value, row,index){
+//                            //return row.id;
+//                            return '<a href="javascript:void(0)" class="easyui-linkbutton" >详细</a>';
+//                        }
+//                    },
                 {field: 'recordid', title: '记录号', width: 100, sortable: true},
                 {field: 'sale_type', title: '销售性质', width: 100},
                 {field: 'productid', title: '产品型号', width: 100},
@@ -99,7 +108,7 @@
                         }
                     }
                 },
-                //{field: 'create_time', title: '创建时间', width: 120},
+                {field: 'assigned', title: '机台排单', width: 120},
                 {field: 'message', title: '备注', width: 100},       
             ]],
             columns: [[

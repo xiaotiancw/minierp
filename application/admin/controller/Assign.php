@@ -3,50 +3,6 @@ namespace app\admin\controller;
 use think\Db;
 class Assign extends \app\common\controller\BaseController
 {
-//    public function index($page = 1, $rows = 20, $sort = 'id', $order = 'desc') {
-//            $where = [
-//               [ 'mtr_treatstate','=','已处理'],
-//               [ 'end_treatstate','=','已处理'],
-//            ];
-//            $count = Db::name('record')->where($where)->whereNull('delete_time')->count();
-//            $list = Db::name('record')->where($where)->whereNull('delete_time')->order([$sort => $order])->limit($rows)->page($page)->select();
-//            
-//            $device_list = Db::name('device')->select();
-//            
-//            $this->assign('record_list', $list);
-//            $this->assign('device_list', $device_list);
-//            $this->assign('record_count', $count);
-//            
-//            return view();
-//    }
-      
-//    public function data_grid($page = 1, $rows = 20, $sort = 'id', $order = 'desc') {
-//        if ($this->request->isAjax()) {
-////            $number = input('number','');//工号
-////            $name = input('name','');//姓名
-////            $startDate = input('startDate','');
-////            $endDate = input('endDate','');
-//            $where = [];
-////            if($number){
-////                $where1 = [['number', 'like', "%$number%"]];
-////                $where = array_merge($where,$where1);
-////            }
-////            if($name){
-////                $where1 = [['name', 'like', "%$name%"]];
-////                $where = array_merge($where,$where1);
-////            }
-////            if($startDate && $endDate){
-////                $where3 = [['entry_date', 'between time', [$startDate, $endDate]]];
-////                $where = array_merge($where,$where3);
-////            }
-//            
-//            $count = Db::name('record')->where($where)->count();
-//            $list = Db::name('record')->where($where)->order([$sort => $order])->limit($rows)->page($page)->select();
-//            
-//            
-//            return ['total' => $count, 'rows' => $list ? $list : ''];
-//        }
-//    }
     
     public function device_type() {
         if ($this->request->isAjax()) {
@@ -62,21 +18,25 @@ class Assign extends \app\common\controller\BaseController
         $sale_type = input('search_key2','');
         $sale_type ? $where['sale_type'] = $sale_type : null;
         $productid = input('search_key3','');
-        $productid ? $where['productid'] = $productid : null;
-        $startDate = input('search_startDate','');
-        $endDate = input('search_endDate','');
-        if ($startDate && $endDate) {
-            $where3 = [['deadline', 'between time', [$startDate, $endDate]]];
-            $where = array_merge($where, $where3);
+        //$productid ? $where['productid'] = ['like',"%$productid%"] : null;
+        if($productid){
+            $where1 = [['productid', 'like', "%$productid%"]];
+            $where = array_merge($where, $where1);
         }
-        $where['end_treatstate'] = null;
+//        $startDate = input('search_startDate','');
+//        $endDate = input('search_endDate','');
+//        if ($startDate && $endDate) {
+//            $where3 = [['deadline', 'between time', [$startDate, $endDate]]];
+//            $where = array_merge($where, $where3);
+//        }
+        //$where['end_treatstate'] = null;
 
         // 查询状态为1的用户数据 并且每页显示10条数据 总记录数为1000
         //$count = Db::name('record')->where($where)->whereNull('delete_time')->count();
         $list = Db::name('record')->alias('a')->join('device d','a.deviceid = d.device_name')
                 ->field('a.id,deviceid,recordid,productid,sale_type,num,deadline,d.device_type,'
-                        . 'lean_treatstate,assign_treatstate')
-                ->where($where)->order('deadline asc')
+                        . 'lean_treatstate,assign_treatstate,assigned')
+                ->where($where)->whereNull('end_treatstate')->order('deadline asc')
                 ->paginate(15,false,['query'=>request()->param()])
                 ->each(function($item, $key){
             switch ($item['assign_treatstate']) {
@@ -110,7 +70,7 @@ class Assign extends \app\common\controller\BaseController
         $this->assign('list', $list);
         $this->assign('page', $page);
         
-        $device_list = Db::name('device')->order('device_type asc')->select();
+        $device_list = Db::name('device')->order('device_type asc,device_name asc')->select();
         $ass_list = Db::name('record_assign')->where('assign_state','=',null)->select();
         
         $ddlist = [];
@@ -120,7 +80,7 @@ class Assign extends \app\common\controller\BaseController
             foreach ($ass_list as $akey => $ass) {
                 if($dname == $ass['bind_device']){
                     //$assign['A'.$ass['assign_seq']] = $ass['productid'];
-                    $assign['A'.$ass['assign_seq']] = '<div class="item">'.$ass['productid'].'</div>';
+                    $assign['A'.$ass['assign_seq']] = '<div class="item" data="'.$ass['recordid'].'" title="'.$ass['sale_type'].'/'.$ass['num'].'米/'.$ass['deviceid'].'">'.$ass['productid'].'</div>';
                 }
             }
             $ddlist[] = $assign;
