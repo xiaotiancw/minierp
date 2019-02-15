@@ -11,7 +11,7 @@
                 <a href="javascript:;" class="export"><i class="fa fa-file-excel-o yellow"></i>导出Excel</a>-->
         
     </div>
-    <div class="tool-search" style="padding:5px 0 0 0;">
+<!--    <div class="tool-search" style="padding:5px 0 0 0;">
         <label for="order-search-keywords" style="margin-left: 10px;">用户名：</label>
         <input type="text" id="order-search-keywords" class="easyui-textbox">
         <label for="order-search-keywords">姓名：</label>
@@ -21,7 +21,7 @@
         <label for="order-search-date-to">-</label>
         <input type="text" id="order-search-date-to" class="easyui-datebox">
         <a href="javascript:void(0)" class="easyui-linkbutton" data-options='iconCls:"fa fa-search"' onclick="orderOpt.search()">查询</a>
-    </div>
+    </div>-->
 </div>
 <table id="dataGrid" data-options="border:false"></table>
 
@@ -57,12 +57,17 @@
             columns: [[
 			{ field: 'id', title: '编号', checkbox:true },
 			{ field: 'accounts', title: '登录名称', width: 120 },
-                        { field: 'staffname', title: '真实姓名', width: 120,
-                            formatter: function(value,row,index){
-                                if(row.staff){
-                                    return row.staff.name;
+                        { field: 'staff_name', title: '真实姓名', width: 120},
+                        { field: 'groupname', title: '角色', width: 120,
+                            formatter:function(value,row,index){
+                                var groupname = '';
+                                for(var i=0;i<row.groups.length;i++){
+                                    //console.log(row.groups[i])
+                                    groupname += row.groups[i].title + ',';
                                 }
-                            }  
+                                groupname = groupname.substring(0, groupname.length - 1);
+                                return groupname;
+                            }
                         },
 			{ field: 'last_login_ip', title: '登录IP', width: 150 },
 			{ field: 'last_login_time', title: '登录时间', width: 100 },

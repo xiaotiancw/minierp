@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>生产排单</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="__CSS__/reset.css" rel="stylesheet" type="text/css" />
+        <link href="__EASYUI__/themes/default/easyui.css" rel="stylesheet" type="text/css" />
+        <link href="__CSS__/font-awesome.min.css" rel="stylesheet" type="text/css" />
+        <link href="__CSS__/layout.css" rel="stylesheet" type="text/css" />
+        <style>
+            .right{
+                float:left;
+                width:570px;
+            }
+            .right table{
+                background:#E0ECFF;
+                width:100%;
+                border: 1px solid;
+            }
+            .right td{
+                background:#fafafa;
+                color:#444;
+                text-align:center;
+                padding:2px;
+                border: 1px solid;
+            }
+            .right td{
+                background:#E0ECFF;
+            }
+            .right td.drop{
+                background:#fafafa;
+                width:100px;
+            }
+            .right td.over{
+                background:#FBEC88;
+            }
+            .item{
+                text-align:center;
+                /*border:1px solid #499B33;
+                //background:#fafafa;*/
+                color:#444;
+                width:100px;
+            }
+            .assigned{
+                border:1px solid #BC2A4D;
+            }
+            .trash{
+                background-color:red;
+            }
+        </style>
+    </head>
+    <body class="easyui-layout vui-easyui">
+        <div data-options="region:'center',title:'机台安排',iconCls:'fa fa-save'">
+            <div class="right">
+                <table class="table-borderd table-fixed">
+                    <tr>
+                        <td class="blank"  width="80">机台号</td>
+                        <td class="blank" width="100">精密</td>
+                        <td class="title" width="100">一</td>
+                        <td class="title" width="100">二</td>
+                        <td class="title" width="100">三</td>
+                        <td class="title" width="100">四</td>
+                        <td class="title" width="100">五</td>
+                    </tr>
+                    {volist name='device_list' id='device'}
+                    <tr>
+                        <td class="time1">{$device.device_name}</td>
+                        <td class="time2">{$device.device_type}</td>
+                        <td class="drop time3" seq='1'>{$device.A1|default=''|raw}</td>
+                        <td class="drop time3" seq='2'>{$device.A2|default=''|raw}</td>
+                        <td class="drop time3" seq='3'>{$device.A3|default=''|raw}</td>
+                        <td class="drop time3" seq='4'>{$device.A4|default=''|raw}</td>
+                        <td class="drop time3" seq='5'>{$device.A5|default=''|raw}</td>
+                    </tr>
+                    {/volist}
+                </table>
+            </div>
+        </div>
+
+        <script src="__EASYUI__/jquery.min.js" type="text/javascript"></script>
+        <script src="__EASYUI__/jquery.easyui.min.js" type="text/javascript"></script>
+        <script src="__EASYUI__/locale/easyui-lang-zh_CN.js" type="text/javascript"></script>
+
+        <script type="text/javascript" src="__JS__/layer/layer.js"></script>
+        <script type="text/javascript" src="__JS__/common.js"></script>
+        <script type="text/javascript">
+            var device_type_url = '{:url("/admin/assign/device_type")}';
+            var assign_index_url = '{:url("/admin/assign/index")}';
+
+
+        </script>
+    </body>
+</html>

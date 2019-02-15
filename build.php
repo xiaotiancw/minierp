@@ -18,7 +18,7 @@ return [
         '__file__'   => ['common.php'],
         '__dir__'    => ['behavior', 'controller', 'model', 'view'],
         'controller' => [
-            'Index', 'Login', 'User','Staff','Group', 'Auth', 'Log',
+            'Index', 'Login', 'User','Group', 'Auth',
             'Record','Alarm','Assign','RecordAssign'
             ],
         'model'      => ['User'],
@@ -26,10 +26,8 @@ return [
             'index/index',
             'login/index',
             'user/index','user/create','user/edit',
-            'staff/index','staff/create','staff/edit',
             'group/index','group/create','group/edit','group/detail',
             'auth/index','auth/create','auth/edit','auth/detail',
-            'log/index',
             /*生产记录 */
             'record/index','record/create','record/edit',
             'record/expired',//已过交期列表

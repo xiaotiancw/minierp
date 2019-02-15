@@ -22,6 +22,7 @@ class Login extends \think\Controller
                     $data['msg'] = '用户密码错误';
                     return json($data);
                 } else {
+                    $user['password'] = null;//去掉密码
                     session('user', $user);
                     //返回成功信息
                     $data['Success'] = true;

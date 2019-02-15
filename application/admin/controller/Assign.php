@@ -11,6 +11,10 @@ class Assign extends \app\common\controller\BaseController
         }
     }
     
+    /**
+     * 生产排单
+     * @return type
+     */
     public function index() {
         $where = [];
         $device_type = input('search_key1','');
@@ -90,6 +94,32 @@ class Assign extends \app\common\controller\BaseController
         
 
 //        $this->assign('ass_list', $ass_list);
+        // 渲染模板输出
+        return $this->fetch();
+    }
+    
+    /**
+     * 机台安排查询
+     */
+    public function query() {
+        $device_list = Db::name('device')->order('device_type asc,device_name asc')->select();
+        $ass_list = Db::name('record_assign')->where('assign_state', '=', null)->select();
+
+        $ddlist = [];
+        foreach ($device_list as $key => $device) {
+            $dname = $device['device_name'];
+            $assign = $device;
+            foreach ($ass_list as $akey => $ass) {
+                if ($dname == $ass['bind_device']) {
+                    //$assign['A'.$ass['assign_seq']] = $ass['productid'];
+                    $assign['A' . $ass['assign_seq']] = '<div class="item" data="' . $ass['recordid'] . '" title="' . $ass['sale_type'] . '/' . $ass['num'] . '米/' . $ass['deviceid'] . '">' . $ass['productid'] . '</div>';
+                }
+            }
+            $ddlist[] = $assign;
+        }
+        //dump($ddlist);
+        $this->assign('device_list', $ddlist);
+
         // 渲染模板输出
         return $this->fetch();
     }

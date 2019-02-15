@@ -12,7 +12,12 @@
             </div>
             <div class="form-column1">
                 <div class="form-column-left">
-                    <input id="staff_id" name="staff_id" class="easyui-textbox" data-options="label:'关联员工：',required:true">
+                    <input name="staff_name" class="easyui-textbox" data-options="label:'姓名：',required:true,validType:['NotEmpty','minLength[2]']">
+                </div>
+            </div>
+            <div class="form-column1">
+                <div class="form-column-left">
+                    <input id="group_id" name="group_id" class="easyui-textbox" data-options="label:'关联职位：',required:true">
                 </div>
             </div>
             <div class="form-column1">
@@ -31,7 +36,6 @@
                 </div>
             </div>
             <div class="form-btnBar pl75">
-                <input type="hidden" name="id"/>
                 <a id='addFormSubmit' href="javascript:void(0)" class="easyui-linkbutton btnPrimary" style="width:80px">保存</a>
                 <a id="addFormClear" href="javascript:void(0)" class="easyui-linkbutton btnDefault" style="width:80px">重置</a>
             </div>
@@ -39,9 +43,9 @@
     </div>
 
 <script>
-    var staff_combogrid_url = '{:url("/admin/staff/combo_grid")}';
+    var group_combogrid_url = '{:url("/admin/group/combo_grid")}';
     var add_url =  '{:url("/admin/user/create")}';
-    var staff_combogrid = $('#staff_id');
+    var group_combogrid = $('#group_id');
     var addForm = $('#formAdd');
     StateData = [
         { "value": "正常", "text": "正常" },
@@ -60,47 +64,25 @@
             panelHeight:70
         });
        
-        
-        //新增关联档案
-        staff_combogrid.combogrid({
-            width : 120,
+        group_combogrid.combobox({
+            width : 140,
             height : 32,
-            url : staff_combogrid_url,
-            panelWidth : 450,
-            panelHeight : 'auto',
-            panelMaxHeight : 227,
-            fitColumns : true,
-            rownumbers : true,
-            border : false,
-            idField:'id',
-            textField:'name',
+            url : group_combogrid_url,
+//            queryParams : {
+//                all : true
+//            },
+            required : true,
             editable : false,
-            sortName : 'create_time',
-            sortOrder : 'DESC',
-            pagination : true,
-            pageSize : 5,
-            pageList : [5, 10, 30, 40, 50],
-            pageNumber : 1,
-            columns : [[
-                {field : 'id',title : '自动编号',width : 50,hidden : true},
-                {field : 'name',title : '姓名',width : 80},
-                {field : 'number',title : '工号',width : 50,sortable : true},
-                {field : 'gender',title : '性别',width : 50,sortable : true},
-                {field : 'id_card',title : '身份证',width : 150},
-                {field : 'post',title : '职位',width: 50},
-                {field: 'create_time',title: '创建时间',width: 100,hidden: true}
-                ]],
-            onOpen: function ()
-            {
-                staff_combogrid.combogrid('grid').datagrid('reload');
-            },
-            onShowPanel: function ()
-            {
-                staff_combogrid.combogrid('panel').panel('resize', {
-                    width: '500px'
-                })
-            }
+            valueField : 'id',
+            textField : 'title',
+            panelHeight : 'auto',
+            //multiple:true,
+//            onSelect:function(record){
+//                //var v = $('#groups').val();
+//                //$('#groups').val(record.title);
+//            }
         });
+
 
         $("#addFormClear").click(function () {
             $('#formAdd').form('clear');

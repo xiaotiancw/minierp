@@ -9,7 +9,7 @@ class Index extends \app\common\controller\BaseController
     }
     
     public function kanban() {
-        echo 'ok';
+        echo '<h1>Modlia 生产管理系统</h1>';
     }
     
     //加载菜单导航

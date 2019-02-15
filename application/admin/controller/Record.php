@@ -34,8 +34,8 @@ class Record extends \app\common\controller\BaseController
                 $where3 = [['deadline', 'between time', [$startDate, $endDate]]];
                 $where = array_merge($where,$where3);
             }
-            $count = db('record')->where($where)->whereNull('delete_time')->count();
-            $list = db('record')->where($where)->whereNull('delete_time')->order([$sort => $order])->limit($rows)->page($page)->select();
+            $count = Db::name('record')->where($where)->whereNull('delete_time')->count();
+            $list = Db::name('record')->where($where)->whereNull('delete_time')->order([$sort => $order])->limit($rows)->page($page)->select();
             return ['total' => $count, 'rows' => $list ? $list : ''];
         }
     }
@@ -79,8 +79,8 @@ class Record extends \app\common\controller\BaseController
                 ['delete_time','exp',Db::raw('is null')]
                 ];
             $where = array_merge($where,$where4);
-            $count = db('record')->where($where)->count();
-            $list = db('record')->where($where)->order([$sort => $order])->limit($rows)->page($page)->select();
+            $count = Db::name('record')->where($where)->count();
+            $list = Db::name('record')->where($where)->order([$sort => $order])->limit($rows)->page($page)->select();
             return ['total' => $count, 'rows' => $list ? $list : ''];
         }
     }
@@ -112,12 +112,12 @@ class Record extends \app\common\controller\BaseController
         if ($this->request->isPost()) {
             $data = input('post.');
             if($data['recordid']){
-                $r = db('record')->where('recordid',$data['recordid'])->find();
+                $r = Db::name('record')->where('recordid',$data['recordid'])->find();
                 if($r){
                     return ['Success' => false, 'Message' => '已经存在相同记录号！'];
                 }
             }
-            $result = db('record')->insert($data);
+            $result = Db::name('record')->insert($data);
             if ($result) {
                 return ['Success' => true, 'Message' => '添加成功！'];
             } else {
@@ -129,7 +129,7 @@ class Record extends \app\common\controller\BaseController
     
     public function detail() {
         $id = input('id/d', 0);
-        $model = db('record')->find($id);
+        $model = Db::name('record')->find($id);
         return json($model);
     }
     
@@ -142,7 +142,7 @@ class Record extends \app\common\controller\BaseController
         // 根据主键软删除
         //$result = db('record')->delete($ids);
         $data['delete_time'] = get_time();
-        $result = db('record')->where('id','in',$ids)->update($data);
+        $result = Db::name('record')->where('id','in',$ids)->update($data);
         if ($result) {
             return ['Success' => true, 'Message' => '删除成功！'];
         } else {
@@ -158,7 +158,7 @@ class Record extends \app\common\controller\BaseController
 //            if($record && !empty($record['sha_treatstate'])){
 //                return ['Success'=>false,'Message'=>'已经纱线处理，不能编辑！'];
 //            }
-            $result = db('record')->update($data);
+            $result = Db::name('record')->update($data);
             if($result){
                 return ['Success'=>true,'Message'=>'更新成功！'];
             }else{
@@ -174,13 +174,13 @@ class Record extends \app\common\controller\BaseController
     public function sha() {
         if($this->request->isPost()){
             $data = input('post.');
-            $record = db('record')->find($data['id']);
+            $record = Db::name('record')->find($data['id']);
             if($record && !empty($record['mtr_treatstate'])){
                 return ['Success'=>false,'Message'=>'已经备料处理，不能修改！'];
             }
             $data['sha_treattime'] = get_time();
             $data['sha_treatstate'] = "已处理";
-            $result = db('record')->update($data);
+            $result = Db::name('record')->update($data);
             if($result){
                 return ['Success'=>true,'Message'=>'更新成功！'];
             }else{
@@ -196,7 +196,7 @@ class Record extends \app\common\controller\BaseController
     public function mtr() {
         if($this->request->isPost()){
             $data = input('post.');
-            $record = db('record')->find($data['id']);
+            $record = Db::name('record')->find($data['id']);
             if($record && empty($record['sha_treatstate'])){
                 return ['Success'=>false,'Message'=>'请先纱线处理！'];
             }
@@ -206,7 +206,7 @@ class Record extends \app\common\controller\BaseController
             $data['mtr_treattime'] = get_time();
             $data['mtr_treatstate'] = "已处理";
             $data['sha_returntime'] = get_time();
-            $result = db('record')->update($data);
+            $result = Db::name('record')->update($data);
             if($result){
                 return ['Success'=>true,'Message'=>'更新成功！'];
             }else{
@@ -222,7 +222,7 @@ class Record extends \app\common\controller\BaseController
     public function sc() {
         if($this->request->isPost()){
             $data = input('post.');
-            $record = db('record')->find($data['id']);
+            $record = Db::name('record')->find($data['id']);
             if($record && empty($record['mtr_treatstate'])){
                 return ['Success'=>false,'Message'=>'请先备料处理！'];
             }
@@ -232,7 +232,7 @@ class Record extends \app\common\controller\BaseController
             $data['assign_treattime'] = get_time();
             $data['assign_treatstate'] = "已处理";
             $data['mtr_returntime'] = get_time();
-            $result = db('record')->update($data);
+            $result = Db::name('record')->update($data);
             if($result){
                 return ['Success'=>true,'Message'=>'更新成功！'];
             }else{
@@ -248,7 +248,7 @@ class Record extends \app\common\controller\BaseController
     public function lean() {
         if($this->request->isPost()){
             $data = input('post.');
-            $record = db('record')->find($data['id']);
+            $record = Db::name('record')->find($data['id']);
             if($record && empty($record['assign_treatstate'])){
                 return ['Success'=>false,'Message'=>'请先生产排单处理！'];
             }
@@ -258,7 +258,7 @@ class Record extends \app\common\controller\BaseController
             $data['lean_treattime'] = get_time();
             $data['lean_treatstate'] = "已处理";
             $data['assign_returntime'] = get_time();
-            $result = db('record')->update($data);
+            $result = Db::name('record')->update($data);
             if($result){
                 return ['Success'=>true,'Message'=>'更新成功！'];
             }else{
@@ -322,7 +322,7 @@ class Record extends \app\common\controller\BaseController
         if (empty($ids)) {
             return ['Success' => false, 'Message' => '导出失败！'];
         }
-        $data = db('record')->where('id', 'in', $ids)->select();
+        $data = Db::name('record')->where('id', 'in', $ids)->select();
 
         //从数据库查询需要的数据
         // Create new Spreadsheet object
@@ -455,8 +455,8 @@ class Record extends \app\common\controller\BaseController
 
         $worksheet->getStyle('A2:E2')->applyFromArray($styleArray)->getFont()->setSize(14);
 //        $sql = "SELECT id,name,chinese,maths,english FROM `t_student`";
-//        $stmt = $db->query($sql);
-        $rows = $data = db('record')->select();
+//        $stmt = $Db::name->query($sql);
+        $rows = $data = Db::name('record')->select();
         $len = count($rows);
         $j = 0;
         for ($i = 0; $i < 10; $i++) {
@@ -525,9 +525,42 @@ class Record extends \app\common\controller\BaseController
                 ['delete_time','exp',Db::raw('is null')]
                 ];
             $where = array_merge($where,$where4);
-            $count = db('record')->where($where)->count();
-            $list = db('record')->where($where)->order([$sort => $order])->limit($rows)->page($page)->select();
+            $count = Db::name('record')->where($where)->count();
+            $list = Db::name('record')->where($where)->order([$sort => $order])->limit($rows)->page($page)->select();
             return ['total' => $count, 'rows' => $list ? $list : ''];
         }
     }
+    
+    
+    public function query() {
+        return view();
+    }
+    /**
+     * 生产记录查询
+     */
+    public function datagrid_query($page = 1, $rows = 20, $sort = 'id', $order = 'desc') {
+        if ($this->request->isAjax()) {
+            $recordId = input('recordid', ''); //产品型号
+            $deadline = input('deadline', '');
+            $startDate = input('startDate', '');
+            $endDate = input('endDate', '');
+            $where = [];
+            if ($recordId) {
+                $where1 = [['productid', 'like', "%$recordId%"]];
+                $where = array_merge($where, $where1);
+            }
+            if ($deadline) {
+                $where2 = [['deadline', 'between time', [$deadline, $deadline]]];
+                $where = array_merge($where, $where2);
+            }
+            if ($startDate && $endDate) {
+                $where3 = [['deadline', 'between time', [$startDate, $endDate]]];
+                $where = array_merge($where, $where3);
+            }
+            $count = Db::name('record')->where($where)->whereNull('delete_time')->count();
+            $list = Db::name('record')->where($where)->whereNull('delete_time')->order([$sort => $order])->limit($rows)->page($page)->select();
+            return ['total' => $count, 'rows' => $list ? $list : ''];
+        }
+    }
+
 }
