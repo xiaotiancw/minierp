@@ -10,11 +10,12 @@ class BaseController extends \think\Controller
     
     protected function initialize() {
         //先假设存在session
-        if (session('user') == null) {
-            session(NULL);
+        $user = session('user');
+        if ($user == null) {
+            session('user',NULL);
             $this->redirect('login/index');
         }
-        $user = session('user');
+        
         if ($user['id'] != 1 && $user['accounts'] != 'admin') {
 
             //$authName = Request::module().'/'.Request::controller().'/'.Request::action;
